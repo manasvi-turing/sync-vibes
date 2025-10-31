@@ -15,8 +15,10 @@
   const FeedbackWidget = {
     version: '1.0.0',
     feedbacks: [],
+    currentUser: null,
     config: {
       storageKey: 'feedback_widget_data',
+      userStorageKey: 'feedback_widget_user',
       showButton: true,
       buttonPosition: 'bottom-right',
       theme: 'light',
@@ -33,6 +35,9 @@
     // FSID: FB-INIT-001
     init: function(options = {}) {
       this.config = { ...this.config, ...options };
+      
+      // Load or prompt for user profile
+      this.loadUser();
       
       // Restore visibility state from localStorage
       const savedVisibility = localStorage.getItem('feedback_markers_visible');
@@ -54,6 +59,141 @@
       this.checkScrollToAnnotation();
       
       return this;
+    },
+    
+    // Load user from localStorage or prompt for profile
+    loadUser: function() {
+      try {
+        const stored = localStorage.getItem(this.config.userStorageKey);
+        if (stored) {
+          this.currentUser = JSON.parse(stored);
+          console.log('Loaded user:', this.currentUser.name);
+        } else {
+          // No user found, prompt for profile
+          this.promptUserProfile();
+        }
+      } catch (e) {
+        console.error('Failed to load user:', e);
+        this.promptUserProfile();
+      }
+    },
+    
+    // Save user to localStorage
+    saveUser: function() {
+      try {
+        localStorage.setItem(this.config.userStorageKey, JSON.stringify(this.currentUser));
+      } catch (e) {
+        console.error('Failed to save user:', e);
+      }
+    },
+    
+    // Prompt user for profile (name and email)
+    promptUserProfile: function() {
+      // Wait for DOM to be ready
+      setTimeout(() => {
+        this.showUserProfileModal();
+      }, 100);
+    },
+    
+    // Show user profile modal
+    showUserProfileModal: function() {
+      const overlay = document.createElement('div');
+      overlay.className = 'fb-modal-overlay';
+      overlay.style.zIndex = '10000000';
+      
+      const modal = document.createElement('div');
+      modal.className = 'fb-modal fb-user-profile-modal';
+      
+      modal.innerHTML = `
+        <div class="fb-modal-header">
+          <div class="fb-modal-title">
+            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">person</span>
+            Welcome to SyncVibes!
+          </div>
+        </div>
+        <div class="fb-modal-body">
+          <p style="color: #6B7280; margin-bottom: 20px; line-height: 1.5;">
+            Please enter your details to start annotating. Your name will appear on all your comments.
+          </p>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">
+              Name <span style="color: #EF4444;">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="fb-user-name" 
+              placeholder="John Doe"
+              style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;"
+              required
+            />
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">
+              Email <span style="color: #9CA3AF;">(optional)</span>
+            </label>
+            <input 
+              type="email" 
+              id="fb-user-email" 
+              placeholder="john@example.com"
+              style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;"
+            />
+          </div>
+          <button 
+            id="fb-user-profile-save"
+            style="width: 100%; padding: 12px; background: #4F46E5; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+            onmouseover="this.style.background='#4338CA'"
+            onmouseout="this.style.background='#4F46E5'"
+          >
+            Get Started
+          </button>
+        </div>
+      `;
+      
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      
+      // Focus on name input
+      setTimeout(() => {
+        document.getElementById('fb-user-name').focus();
+      }, 100);
+      
+      // Handle save
+      const saveBtn = document.getElementById('fb-user-profile-save');
+      const nameInput = document.getElementById('fb-user-name');
+      const emailInput = document.getElementById('fb-user-email');
+      
+      const handleSave = () => {
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        
+        if (!name) {
+          alert('Please enter your name');
+          nameInput.focus();
+          return;
+        }
+        
+        this.currentUser = {
+          id: this.generateId(),
+          name: name,
+          email: email || '',
+          createdAt: new Date().toISOString()
+        };
+        
+        this.saveUser();
+        overlay.remove();
+        
+        console.log('User profile created:', this.currentUser.name);
+      };
+      
+      saveBtn.addEventListener('click', handleSave);
+      
+      // Enter key to submit
+      nameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSave();
+      });
+      emailInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSave();
+      });
     },
     
     // Check if we need to scroll to annotation after page load
@@ -219,6 +359,45 @@
           background: #F3F4F6;
           cursor: pointer;
           transform: translateY(-1px);
+        }
+        
+        .fb-actions-bar {
+          display: flex;
+          gap: 8px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .fb-action-btn {
+          flex: 1;
+          padding: 8px;
+          background: rgba(255, 255, 255, 0.95);
+          border: 1px solid #E5E7EB;
+          border-radius: 6px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          font-family: inherit;
+          font-size: 12px;
+          font-weight: 500;
+          color: #374151;
+          transition: all 0.2s;
+        }
+        
+        .fb-action-btn .material-symbols-outlined {
+          font-size: 16px;
+        }
+        
+        .fb-action-btn:hover {
+          background: #4F46E5;
+          color: white;
+          border-color: #4F46E5;
+          transform: translateY(-1px);
+        }
+        
+        .fb-action-label {
+          font-size: 11px;
         }
         
         .fb-modal-overlay {
@@ -485,10 +664,37 @@
           margin-bottom: 0;
         }
         
-        .fb-comment-time {
+        .fb-comment-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+          gap: 8px;
+        }
+        
+        .fb-comment-author {
+          font-size: 12px;
+          font-weight: 600;
+          color: #4F46E5;
+        }
+        
+        .fb-comment-author-me {
+          font-size: 12px;
+          font-weight: 600;
+          color: #10B981;
+        }
+        
+        .fb-comment-author-me::after {
+          content: ' (you)';
+          font-weight: 400;
           font-size: 11px;
           color: #6B7280;
-          margin-bottom: 6px;
+        }
+        
+        .fb-comment-time {
+          font-size: 11px;
+          color: #9CA3AF;
+          white-space: nowrap;
         }
         
         .fb-comment-text {
@@ -803,8 +1009,37 @@
         this.openAnnotationsModal('total');
       });
       
+      // Create export/import bar
+      const actionsBar = document.createElement('div');
+      actionsBar.className = 'fb-actions-bar';
+      actionsBar.innerHTML = `
+        <button class="fb-action-btn" id="fb-export-btn" title="Export annotations to JSON file">
+          <span class="material-symbols-outlined">download</span>
+          <span class="fb-action-label">Export</span>
+        </button>
+        <button class="fb-action-btn" id="fb-import-btn" title="Import annotations from JSON file">
+          <span class="material-symbols-outlined">upload</span>
+          <span class="fb-action-label">Import</span>
+        </button>
+      `;
+      container.appendChild(actionsBar);
+      
+      // Hidden file input for import
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'application/json';
+      fileInput.style.display = 'none';
+      fileInput.onchange = (e) => this.handleImportFile(e);
+      container.appendChild(fileInput);
+      this.fileInput = fileInput;
+      
+      // Append container first
       document.body.appendChild(container);
       this.widgetContainer = container;
+      
+      // Then add click handlers (after elements are in DOM)
+      document.getElementById('fb-export-btn').addEventListener('click', () => this.exportToFile());
+      document.getElementById('fb-import-btn').addEventListener('click', () => fileInput.click());
       
       // Update stats initially
       this.updateStats();
@@ -1379,7 +1614,12 @@
         comments: [
           {
             text: comment.trim(),
-            timestamp: timestamp
+            timestamp: timestamp,
+            author: {
+              id: this.currentUser?.id || 'anonymous',
+              name: this.currentUser?.name || 'Anonymous',
+              email: this.currentUser?.email || ''
+            }
           }
         ],
         position: {
@@ -1486,12 +1726,21 @@
       // Build comments history HTML
       let commentsHTML = '';
       if (feedback.comments && feedback.comments.length > 0) {
-        commentsHTML = feedback.comments.map(c => `
-          <div class="fb-comment-item">
-            <div class="fb-comment-time">${new Date(c.timestamp).toLocaleString()}</div>
-            <div class="fb-comment-text">${this.escapeHtml(c.text)}</div>
-          </div>
-        `).join('');
+        commentsHTML = feedback.comments.map(c => {
+          const authorName = c.author?.name || 'Unknown User';
+          const isCurrentUser = c.author?.id === this.currentUser?.id;
+          const authorClass = isCurrentUser ? 'fb-comment-author-me' : 'fb-comment-author';
+          
+          return `
+            <div class="fb-comment-item">
+              <div class="fb-comment-header">
+                <span class="${authorClass}">${this.escapeHtml(authorName)}</span>
+                <span class="fb-comment-time">${new Date(c.timestamp).toLocaleString()}</span>
+              </div>
+              <div class="fb-comment-text">${this.escapeHtml(c.text)}</div>
+            </div>
+          `;
+        }).join('');
       }
       
       inputBox.innerHTML = `
@@ -1604,7 +1853,12 @@
         if (feedback.comment) {
           feedback.comments.push({
             text: feedback.comment,
-            timestamp: feedback.timestamp
+            timestamp: feedback.timestamp,
+            author: {
+              id: 'legacy',
+              name: 'Unknown User',
+              email: ''
+            }
           });
         }
       }
@@ -1612,7 +1866,12 @@
       // Add new comment
       feedback.comments.push({
         text: commentText,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        author: {
+          id: this.currentUser?.id || 'anonymous',
+          name: this.currentUser?.name || 'Anonymous',
+          email: this.currentUser?.email || ''
+        }
       });
       
       this.saveFeedbacks();
@@ -1956,6 +2215,151 @@
       document.querySelectorAll('.fb-feedback-marker').forEach(m => m.remove());
     },
 
+    // Export annotations to JSON file
+    exportToFile: function() {
+      if (this.feedbacks.length === 0) {
+        alert('No annotations to export!');
+        return;
+      }
+      
+      const data = {
+        version: this.version,
+        exportDate: new Date().toISOString(),
+        totalAnnotations: this.feedbacks.length,
+        annotations: this.exportFeedbacks()
+      };
+      
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `syncvibes-annotations-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      console.log('Exported', this.feedbacks.length, 'annotations');
+    },
+    
+    // Handle import file selection
+    handleImportFile: function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          
+          // Support both old and new format
+          const annotations = data.annotations || data;
+          
+          if (!Array.isArray(annotations)) {
+            alert('Invalid file format! Expected an array of annotations.');
+            return;
+          }
+          
+          // Count potential new items
+          const existingIds = new Set(this.feedbacks.map(fb => fb.id));
+          const potentialNewAnnotations = annotations.filter(a => !existingIds.has(a.id)).length;
+          const existingAnnotations = annotations.length - potentialNewAnnotations;
+          
+          let confirm_msg = `Import ${annotations.length} annotation(s)?\n\n`;
+          confirm_msg += `Preview:\n`;
+          if (potentialNewAnnotations > 0) {
+            confirm_msg += `• ${potentialNewAnnotations} new annotation(s)\n`;
+          }
+          if (existingAnnotations > 0) {
+            confirm_msg += `• ${existingAnnotations} existing annotation(s) (will merge new comments)\n`;
+          }
+          
+          if (confirm(confirm_msg)) {
+            const result = this.mergeFeedbacks(annotations);
+            
+            let successMsg = 'Import complete!\n\n';
+            if (result.newAnnotations > 0) {
+              successMsg += `✓ Added ${result.newAnnotations} new annotation(s)\n`;
+            }
+            if (result.newComments > 0) {
+              successMsg += `✓ Added ${result.newComments} new comment(s) to existing annotations\n`;
+            }
+            if (result.newAnnotations === 0 && result.newComments === 0) {
+              successMsg = 'No new data to import. Everything is up to date!';
+            }
+            
+            alert(successMsg);
+          }
+        } catch (error) {
+          alert('Error reading file: ' + error.message);
+          console.error('Import error:', error);
+        }
+      };
+      
+      reader.readAsText(file);
+      
+      // Reset file input so same file can be selected again
+      event.target.value = '';
+    },
+    
+    // Merge imported feedbacks with existing ones (smart deep merge)
+    mergeFeedbacks: function(importedFeedbacks) {
+      let newAnnotationsCount = 0;
+      let newCommentsCount = 0;
+      
+      importedFeedbacks.forEach(importedFb => {
+        const existingFb = this.feedbacks.find(fb => fb.id === importedFb.id);
+        
+        if (!existingFb) {
+          // New annotation - add it
+          this.feedbacks.push(importedFb);
+          newAnnotationsCount++;
+        } else {
+          // Existing annotation - merge comments
+          
+          // Initialize comments array if it doesn't exist
+          if (!existingFb.comments) {
+            existingFb.comments = [];
+          }
+          
+          const importedComments = importedFb.comments || [];
+          const existingComments = existingFb.comments;
+          
+          // Get existing comment identifiers (timestamp + author id + text)
+          const existingCommentKeys = new Set(
+            existingComments.map(c => 
+              `${c.timestamp}-${c.author?.id || 'unknown'}-${c.text}`
+            )
+          );
+          
+          // Add only new comments
+          importedComments.forEach(importedComment => {
+            const commentKey = `${importedComment.timestamp}-${importedComment.author?.id || 'unknown'}-${importedComment.text}`;
+            
+            if (!existingCommentKeys.has(commentKey)) {
+              existingFb.comments.push(importedComment);
+              newCommentsCount++;
+            }
+          });
+          
+          // Sort comments by timestamp
+          existingFb.comments.sort((a, b) => a.timestamp - b.timestamp);
+          
+          // Update marker tooltip for this annotation
+          this.updateMarkerTooltip(existingFb.id);
+        }
+      });
+      
+      this.saveFeedbacks();
+      this.displayMarkersForCurrentPage();
+      
+      console.log(`Merged ${newAnnotationsCount} new annotations and ${newCommentsCount} new comments. Total: ${this.feedbacks.length} annotations`);
+      
+      return { newAnnotations: newAnnotationsCount, newComments: newCommentsCount };
+    },
+    
     // FSID: FB-EXPORT-001
     exportFeedbacks: function() {
       return JSON.parse(JSON.stringify(this.feedbacks));
