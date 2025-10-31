@@ -545,14 +545,34 @@
     displayMarkersForCurrentPage: function() {
       this.clearMarkers();
       
-      const currentPath = window.location.pathname;
       const currentUrl = window.location.href;
+      const currentPath = window.location.pathname;
+      const currentHash = window.location.hash;
       
-      this.feedbacks
-        .filter(fb => fb.pathname === currentPath || fb.url === currentUrl)
-        .forEach(fb => this.createMarker(fb));
+      const matchingFeedbacks = this.feedbacks.filter(fb => {
+        try {
+          // Parse feedback URL
+          const fbUrl = new URL(fb.url, window.location.origin);
+          
+          // Match full URL (exact match including hash)
+          if (fb.url === currentUrl) return true;
+          
+          // Match pathname + hash for hash-based SPAs
+          if (fbUrl.pathname === currentPath && fbUrl.hash === currentHash) return true;
+          
+          // Fallback: match pathname only if neither has hash
+          if (fbUrl.pathname === currentPath && !currentHash && !fbUrl.hash) return true;
+          
+          return false;
+        } catch (e) {
+          // Fallback to simple pathname match if URL parsing fails
+          return fb.pathname === currentPath;
+        }
+      });
       
-      console.log(`Displayed ${this.feedbacks.filter(fb => fb.pathname === currentPath).length} markers for ${currentPath}`);
+      matchingFeedbacks.forEach(fb => this.createMarker(fb));
+      
+      console.log(`Displayed ${matchingFeedbacks.length} markers for ${currentPath}${currentHash}`);
     },
 
     clearMarkers: function() {
