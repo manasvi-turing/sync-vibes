@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page - Multipage Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 60px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      color: #1a202c;
+      margin-bottom: 20px;
+      font-size: 3em;
+    }
+    
+    p {
+      color: #4a5568;
+      line-height: 1.8;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    
+    .nav {
+      background: #f7fafc;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+    
+    .nav h2 {
+      color: #2d3748;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #4F46E5;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-links a:hover {
+      background: #4338CA;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+    
+    .content-box {
+      background: #edf2f7;
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 30px;
+    }
+    
+    .content-box h3 {
+      color: #2d3748;
+      margin-bottom: 15px;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .feature-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-card h4 {
+      color: #4F46E5;
+      margin-bottom: 10px;
+    }
+    
+    .highlight {
+      background: #fef3c7;
+      padding: 20px;
+      border-left: 4px solid #f59e0b;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏠 Home Page</h1>
+    <p>Welcome to the Multipage Feedback Widget Demo! This demo showcases how the feedback widget properly handles multiple pages.</p>
+    
+    <div class="nav">
+      <h2>📍 Navigate to Other Pages:</h2>
+      <div class="nav-links">
+        <a href="page1.html">Page 1 - Products</a>
+        <a href="page2.html">Page 2 - About</a>
+        <a href="page3.html">Page 3 - Contact</a>
+        <a href="page4.html">Page 4 - Blog</a>
+        <a href="spa-demo.html">SPA Demo</a>
+      </div>
+    </div>
+    
+    <div class="highlight">
+      <h3>✨ How to Test</h3>
+      <p><strong>1.</strong> Click the "💬 Feedback" button in the bottom-right corner</p>
+      <p><strong>2.</strong> Draw a box on any element on this page and add a comment</p>
+      <p><strong>3.</strong> Navigate to another page - notice your feedback stays on THIS page only</p>
+      <p><strong>4.</strong> Add feedback on other pages - each page maintains its own feedback markers</p>
+    </div>
+    
+    <div class="content-box">
+      <h3>Welcome to Our Platform</h3>
+      <p>This is the home page of our demo. Each page in this demo is a separate HTML file, simulating a traditional multipage website. The feedback widget now intelligently filters markers based on the current page's pathname.</p>
+    </div>
+    
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h4>🎯 Page-Specific Feedback</h4>
+        <p>Feedback markers only appear on the page where they were created.</p>
+      </div>
+      <div class="feature-card">
+        <h4>🔄 Route Detection</h4>
+        <p>Automatically detects page changes and updates markers accordingly.</p>
+      </div>
+      <div class="feature-card">
+        <h4>💾 Persistent Storage</h4>
+        <p>All feedback is saved in localStorage and persists across sessions.</p>
+      </div>
+      <div class="feature-card">
+        <h4>⚡ SPA Support</h4>
+        <p>Works seamlessly with single-page applications using pushState/replaceState.</p>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../feedback-widget.js"></script>
+  <script>
+    FeedbackWidget.init({
+      buttonPosition: 'bottom-right'
+    });
+  </script>
+</body>
+</html>
+

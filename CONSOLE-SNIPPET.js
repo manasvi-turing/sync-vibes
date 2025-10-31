@@ -1,17 +1,12 @@
-/**
- * FeedbackWidget - Ultra-lightweight feedback capture library
- * @version 1.0.0
- * @license MIT
- * 
- * Usage:
- *   <script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/feedback-widget.min.js"></script>
- *   <script>FeedbackWidget.init();</script>
- */
+// ============================================
+// FEEDBACK WIDGET - CONSOLE SNIPPET
+// Paste this entire code into browser console
+// Works on ANY website (bypasses CORS)
+// ============================================
 
 (function(window) {
   'use strict';
 
-  // FSID: FB-CORE-001
   const FeedbackWidget = {
     version: '1.0.0',
     feedbacks: [],
@@ -29,7 +24,6 @@
     drawStartY: 0,
     currentDrawBox: null,
 
-    // FSID: FB-INIT-001
     init: function(options = {}) {
       this.config = { ...this.config, ...options };
       this.loadFeedbacks();
@@ -44,7 +38,6 @@
       return this;
     },
 
-    // FSID: FB-STYLE-001
     injectStyles: function() {
       if (document.getElementById('feedback-widget-styles')) return;
       
@@ -227,38 +220,6 @@
         .fb-feedback-btn-secondary:hover {
           background: #E5E7EB;
         }
-        
-        .fb-feedback-list {
-          position: fixed;
-          right: 20px;
-          top: 20px;
-          z-index: 999997;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-          padding: 16px;
-          width: 280px;
-          max-height: 400px;
-          overflow-y: auto;
-        }
-        
-        .fb-feedback-item {
-          padding: 12px;
-          background: #F9FAFB;
-          border-radius: 8px;
-          margin-bottom: 8px;
-          font-size: 13px;
-        }
-        
-        .fb-feedback-item-text {
-          color: #374151;
-          margin-bottom: 4px;
-        }
-        
-        .fb-feedback-item-meta {
-          color: #9CA3AF;
-          font-size: 11px;
-        }
       `;
       
       const styleEl = document.createElement('style');
@@ -267,7 +228,6 @@
       document.head.appendChild(styleEl);
     },
 
-    // FSID: FB-BTN-001
     createToggleButton: function() {
       const btn = document.createElement('button');
       btn.className = `fb-widget-button ${this.config.buttonPosition}`;
@@ -277,13 +237,11 @@
       this.toggleButton = btn;
     },
 
-    // FSID: FB-TOGGLE-001
     toggleMode: function() {
       this.isActive = !this.isActive;
       this.toggleButton.classList.toggle('active', this.isActive);
       this.toggleButton.textContent = this.isActive ? '✖ Cancel' : '💬 Feedback';
       
-      // Update cursor and selection
       if (this.isActive) {
         document.body.style.cursor = 'crosshair';
         document.body.style.userSelect = 'none';
@@ -297,22 +255,18 @@
       }
     },
 
-    // FSID: FB-EVENT-001
     setupEventListeners: function() {
-      // Prevent text selection in feedback mode
       document.addEventListener('selectstart', (e) => {
         if (this.isActive) {
           e.preventDefault();
         }
       });
       
-      // Add cursor style when active
       document.addEventListener('mousemove', (e) => {
         if (this.isActive) {
           document.body.style.cursor = 'crosshair';
           document.body.style.userSelect = 'none';
           
-          // Update drawing box while dragging
           if (this.isDrawing && this.currentDrawBox) {
             this.updateDrawingBox(e.pageX, e.pageY);
           }
@@ -322,7 +276,6 @@
         }
       });
       
-      // Mouse down - start drawing
       document.addEventListener('mousedown', (e) => {
         if (!this.isActive) return;
         if (e.target.closest('.fb-widget-button')) return;
@@ -335,7 +288,6 @@
         this.startDrawing(e.pageX, e.pageY);
       }, true);
       
-      // Mouse up - finish drawing
       document.addEventListener('mouseup', (e) => {
         if (!this.isActive || !this.isDrawing) return;
         
@@ -346,14 +298,11 @@
       }, true);
     },
 
-    // FSID: FB-ROUTE-001
     setupRouteChangeListeners: function() {
-      // Listen for browser back/forward buttons
       window.addEventListener('popstate', () => {
         this.handleRouteChange();
       });
 
-      // Intercept pushState and replaceState for SPA support
       const originalPushState = history.pushState;
       const originalReplaceState = history.replaceState;
       const self = this;
@@ -368,29 +317,24 @@
         self.handleRouteChange();
       };
 
-      // Also listen for hashchange for hash-based routing
       window.addEventListener('hashchange', () => {
         this.handleRouteChange();
       });
     },
 
-    // FSID: FB-ROUTE-002
     handleRouteChange: function() {
       console.log('Route changed to:', window.location.pathname);
       this.displayMarkersForCurrentPage();
       
-      // Close any open feedback boxes when route changes
       if (this.currentBox) {
         this.closeCurrentBox();
       }
       
-      // Remove any drawing box
       if (this.currentDrawBox) {
         this.currentDrawBox.remove();
         this.currentDrawBox = null;
       }
       
-      // Deactivate feedback mode
       if (this.isActive) {
         this.isActive = false;
         this.toggleButton.classList.remove('active');
@@ -400,13 +344,11 @@
       }
     },
 
-    // FSID: FB-DRAW-001
     startDrawing: function(x, y) {
       this.isDrawing = true;
       this.drawStartX = x;
       this.drawStartY = y;
       
-      // Create drawing box
       const drawBox = document.createElement('div');
       drawBox.className = 'fb-drawing-box';
       drawBox.style.left = `${x}px`;
@@ -418,7 +360,6 @@
       this.currentDrawBox = drawBox;
     },
 
-    // FSID: FB-DRAW-002
     updateDrawingBox: function(currentX, currentY) {
       if (!this.currentDrawBox) return;
       
@@ -433,7 +374,6 @@
       this.currentDrawBox.style.height = `${height}px`;
     },
 
-    // FSID: FB-DRAW-003
     finishDrawing: function(endX, endY) {
       this.isDrawing = false;
       
@@ -442,9 +382,7 @@
       const width = Math.abs(endX - this.drawStartX);
       const height = Math.abs(endY - this.drawStartY);
       
-      // Minimum size check
       if (width < 10 || height < 10) {
-        // Too small, treat as single click - make default size box
         if (this.currentDrawBox) {
           this.currentDrawBox.remove();
           this.currentDrawBox = null;
@@ -456,9 +394,7 @@
       this.createFeedbackBox(x, y, width, height);
     },
 
-    // FSID: FB-BOX-001
     createFeedbackBox: function(x, y, width, height) {
-      // Create comment input dialog
       const inputBox = document.createElement('div');
       inputBox.className = 'fb-feedback-box';
       inputBox.style.left = `${Math.min(x + width + 10, window.innerWidth - 340)}px`;
@@ -491,7 +427,6 @@
       inputBox.querySelector('.fb-feedback-btn-primary').onclick = () => this.saveFeedback(textarea.value, x, y, width, height);
     },
 
-    // FSID: FB-CANCEL-001
     cancelFeedback: function() {
       this.closeCurrentBox();
       if (this.currentDrawBox) {
@@ -500,7 +435,6 @@
       }
     },
 
-    // FSID: FB-SAVE-001
     saveFeedback: function(comment, x, y, width, height) {
       if (!comment.trim()) {
         alert('Please enter a comment');
@@ -535,7 +469,6 @@
       this.feedbacks.push(feedback);
       this.saveFeedbacks();
       
-      // Remove drawing box and create permanent marker
       if (this.currentDrawBox) {
         this.currentDrawBox.remove();
         this.currentDrawBox = null;
@@ -544,7 +477,6 @@
       this.createMarker(feedback);
       this.closeCurrentBox();
       
-      // Reset feedback mode
       this.isActive = false;
       this.toggleButton.classList.remove('active');
       this.toggleButton.textContent = '💬 Feedback';
@@ -554,13 +486,11 @@
       console.log('Feedback saved:', feedback);
     },
 
-    // FSID: FB-MARKER-001
     createMarker: function(feedback) {
       const marker = document.createElement('div');
       marker.className = 'fb-feedback-marker';
       const markerNumber = this.feedbacks.indexOf(feedback) + 1;
       
-      // Set box dimensions and position
       marker.style.left = `${feedback.position.pageX}px`;
       marker.style.top = `${feedback.position.pageY}px`;
       marker.style.width = `${feedback.position.width}px`;
@@ -568,7 +498,6 @@
       marker.title = feedback.comment;
       marker.dataset.feedbackId = feedback.id;
       
-      // Create number label
       const label = document.createElement('div');
       label.className = 'fb-feedback-marker-label';
       label.textContent = markerNumber;
@@ -580,21 +509,12 @@
       };
       
       document.body.appendChild(marker);
-      
-      console.log('Created marker #' + markerNumber + ' at:', {
-        left: marker.style.left,
-        top: marker.style.top,
-        width: marker.style.width,
-        height: marker.style.height
-      });
     },
 
-    // FSID: FB-SHOW-001
     showFeedback: function(feedback) {
       alert(`Feedback #${feedback.id}\n\n${feedback.comment}\n\nTime: ${new Date(feedback.timestamp).toLocaleString()}`);
     },
 
-    // FSID: FB-CLOSE-001
     closeCurrentBox: function() {
       if (this.currentBox) {
         this.currentBox.element.remove();
@@ -602,7 +522,6 @@
       }
     },
 
-    // FSID: FB-STORAGE-001
     saveFeedbacks: function() {
       try {
         localStorage.setItem(this.config.storageKey, JSON.stringify(this.feedbacks));
@@ -611,7 +530,6 @@
       }
     },
 
-    // FSID: FB-LOAD-001
     loadFeedbacks: function() {
       try {
         const stored = localStorage.getItem(this.config.storageKey);
@@ -624,12 +542,9 @@
       }
     },
 
-    // FSID: FB-DISPLAY-001
     displayMarkersForCurrentPage: function() {
-      // Remove all existing markers
       this.clearMarkers();
       
-      // Filter feedbacks for current page and create markers
       const currentPath = window.location.pathname;
       const currentUrl = window.location.href;
       
@@ -640,24 +555,20 @@
       console.log(`Displayed ${this.feedbacks.filter(fb => fb.pathname === currentPath).length} markers for ${currentPath}`);
     },
 
-    // FSID: FB-CLEAR-MARKERS-001
     clearMarkers: function() {
       document.querySelectorAll('.fb-feedback-marker').forEach(m => m.remove());
     },
 
-    // FSID: FB-EXPORT-001
     exportFeedbacks: function() {
       return JSON.parse(JSON.stringify(this.feedbacks));
     },
 
-    // FSID: FB-IMPORT-001
     importFeedbacks: function(feedbacks) {
       this.feedbacks = feedbacks;
       this.saveFeedbacks();
       this.displayMarkersForCurrentPage();
     },
 
-    // FSID: FB-CLEAR-001
     clearFeedbacks: function() {
       if (confirm('Clear all feedbacks?')) {
         this.feedbacks = [];
@@ -666,14 +577,17 @@
       }
     },
 
-    // FSID: FB-UTIL-001
     generateId: function() {
       return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
   };
 
-  // Export to window
   window.FeedbackWidget = FeedbackWidget;
+  
+  // Auto-initialize
+  FeedbackWidget.init();
+  console.log('%c✅ Feedback Widget Loaded!', 'background: #4F46E5; color: white; padding: 8px 16px; border-radius: 4px; font-weight: bold;');
+  console.log('Click the 💬 Feedback button in the bottom-right corner to start!');
 
 })(window);
 

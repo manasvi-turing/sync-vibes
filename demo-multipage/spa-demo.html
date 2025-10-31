@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPA Demo - Single Page Application</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 60px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      color: #1a202c;
+      margin-bottom: 20px;
+      font-size: 3em;
+    }
+    
+    .spa-nav {
+      background: #f7fafc;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 40px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .spa-nav button {
+      padding: 12px 24px;
+      background: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .spa-nav button:hover {
+      background: #4338CA;
+      transform: translateY(-2px);
+    }
+    
+    .spa-nav button.active {
+      background: #1F2937;
+    }
+    
+    #content {
+      min-height: 400px;
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .highlight-box {
+      background: #fef3c7;
+      padding: 20px;
+      border-left: 4px solid #f59e0b;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .highlight-box h3 {
+      color: #92400e;
+      margin-bottom: 10px;
+    }
+    
+    .highlight-box p {
+      color: #78350f;
+      line-height: 1.6;
+    }
+    
+    .content-section h2 {
+      color: #2d3748;
+      margin: 30px 0 15px 0;
+    }
+    
+    .content-section p {
+      color: #4a5568;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+    
+    .feature-box {
+      background: #f7fafc;
+      padding: 30px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+    
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: #4F46E5;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .back-link:hover {
+      background: #4338CA;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ SPA Demo (Single Page App)</h1>
+    <p>This demonstrates how the feedback widget handles route changes in single-page applications using history.pushState().</p>
+    
+    <div class="highlight-box">
+      <h3>🎯 How This Works</h3>
+      <p><strong>Navigation:</strong> Click the buttons below to navigate. Notice the URL changes without a page reload!</p>
+      <p><strong>Feedback:</strong> Add feedback on different "routes" and see how the widget correctly filters markers based on the current route.</p>
+      <p><strong>Technology:</strong> This uses history.pushState() API, which is what React Router, Vue Router, and other SPA frameworks use.</p>
+    </div>
+    
+    <div class="spa-nav">
+      <button onclick="navigateTo('/spa-home')" data-route="/spa-home">Home</button>
+      <button onclick="navigateTo('/spa-dashboard')" data-route="/spa-dashboard">Dashboard</button>
+      <button onclick="navigateTo('/spa-profile')" data-route="/spa-profile">Profile</button>
+      <button onclick="navigateTo('/spa-settings')" data-route="/spa-settings">Settings</button>
+      <button onclick="navigateTo('/spa-analytics')" data-route="/spa-analytics">Analytics</button>
+    </div>
+    
+    <div id="content"></div>
+    
+    <a href="index.html" class="back-link">← Back to Multipage Demo</a>
+  </div>
+  
+  <script src="../feedback-widget.js"></script>
+  <script>
+    // Initialize feedback widget
+    FeedbackWidget.init();
+    
+    // SPA routing logic
+    const routes = {
+      '/spa-home': {
+        title: '🏠 Home',
+        content: `
+          <div class="content-section">
+            <h2>Welcome to the SPA Demo</h2>
+            <p>This is a simulated single-page application. When you click the navigation buttons above, the URL changes but the page doesn't reload - just like React, Vue, or Angular apps!</p>
+            <div class="feature-box">
+              <h3>✨ Try This:</h3>
+              <p>1. Add feedback to this home view</p>
+              <p>2. Navigate to Dashboard</p>
+              <p>3. Add different feedback there</p>
+              <p>4. Navigate back - your home feedback is still here!</p>
+            </div>
+          </div>
+        `
+      },
+      '/spa-dashboard': {
+        title: '📊 Dashboard',
+        content: `
+          <div class="content-section">
+            <h2>Dashboard View</h2>
+            <p>This is a completely different view with its own feedback markers. Notice how the URL changed to include "dashboard" but we didn't reload the page.</p>
+            <div class="feature-box">
+              <h3>Key Metrics</h3>
+              <p>📈 Revenue: $125,430</p>
+              <p>👥 Active Users: 2,847</p>
+              <p>⭐ Satisfaction: 4.8/5</p>
+              <p>🚀 Growth: +23% MoM</p>
+            </div>
+            <p>Add feedback to specific metrics or UI elements on this dashboard. When you navigate away and come back, your feedback will still be here!</p>
+          </div>
+        `
+      },
+      '/spa-profile': {
+        title: '👤 Profile',
+        content: `
+          <div class="content-section">
+            <h2>User Profile</h2>
+            <p>This is the profile view. Each route in this SPA has its own isolated feedback markers.</p>
+            <div class="feature-box">
+              <h3>Profile Information</h3>
+              <p><strong>Name:</strong> John Doe</p>
+              <p><strong>Email:</strong> john.doe@example.com</p>
+              <p><strong>Role:</strong> Product Manager</p>
+              <p><strong>Location:</strong> San Francisco, CA</p>
+              <p><strong>Member Since:</strong> January 2024</p>
+            </div>
+            <p>Try adding feedback about the profile layout or information display. The feedback will be associated with this specific route.</p>
+          </div>
+        `
+      },
+      '/spa-settings': {
+        title: '⚙️ Settings',
+        content: `
+          <div class="content-section">
+            <h2>Settings</h2>
+            <p>Configure your preferences here. This view has its own feedback context separate from other routes.</p>
+            <div class="feature-box">
+              <h3>Preferences</h3>
+              <p>🌓 Theme: Light Mode</p>
+              <p>🔔 Notifications: Enabled</p>
+              <p>📧 Email Digest: Weekly</p>
+              <p>🌐 Language: English</p>
+              <p>🔒 Two-Factor Auth: Enabled</p>
+            </div>
+            <p>Leave feedback about settings options or UI improvements. Your feedback stays with this settings route!</p>
+          </div>
+        `
+      },
+      '/spa-analytics': {
+        title: '📈 Analytics',
+        content: `
+          <div class="content-section">
+            <h2>Analytics & Insights</h2>
+            <p>Deep dive into your data. This analytics view maintains separate feedback from other sections.</p>
+            <div class="feature-box">
+              <h3>Recent Insights</h3>
+              <p>📊 Most popular feature: Dashboard (+45% usage)</p>
+              <p>⏱️ Average session time: 12 minutes</p>
+              <p>🔄 Return rate: 78%</p>
+              <p>📱 Mobile usage: 42%</p>
+              <p>🌍 Top countries: USA, UK, Canada</p>
+            </div>
+            <p>Provide feedback on analytics visualization or data presentation. The feedback widget tracks this as a unique route!</p>
+          </div>
+        `
+      }
+    };
+    
+    function navigateTo(route) {
+      // Update URL without reloading (like SPAs do)
+      history.pushState({ route }, '', route);
+      
+      // Update active button
+      document.querySelectorAll('.spa-nav button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.route === route);
+      });
+      
+      // Render content
+      renderRoute(route);
+    }
+    
+    function renderRoute(route) {
+      const routeData = routes[route] || routes['/spa-home'];
+      document.getElementById('content').innerHTML = routeData.content;
+      
+      // Trigger animation
+      const content = document.getElementById('content');
+      content.style.animation = 'none';
+      setTimeout(() => {
+        content.style.animation = 'fadeIn 0.3s ease-in';
+      }, 10);
+    }
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', (event) => {
+      const route = event.state?.route || '/spa-home';
+      renderRoute(route);
+      
+      // Update active button
+      document.querySelectorAll('.spa-nav button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.route === route);
+      });
+    });
+    
+    // Initialize with home route
+    navigateTo('/spa-home');
+  </script>
+</body>
+</html>
+

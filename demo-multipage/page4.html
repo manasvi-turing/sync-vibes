@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - Multipage Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 60px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      color: #1a202c;
+      margin-bottom: 20px;
+      font-size: 3em;
+    }
+    
+    .breadcrumb {
+      color: #718096;
+      margin-bottom: 30px;
+    }
+    
+    .breadcrumb a {
+      color: #4F46E5;
+      text-decoration: none;
+    }
+    
+    .blog-grid {
+      display: grid;
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .blog-post {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .blog-post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    
+    .blog-post h2 {
+      color: #2d3748;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+    
+    .blog-meta {
+      color: #718096;
+      font-size: 0.9em;
+      margin-bottom: 20px;
+    }
+    
+    .blog-post p {
+      color: #4a5568;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+    
+    .read-more {
+      display: inline-block;
+      color: #4F46E5;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .read-more:hover {
+      color: #4338CA;
+      transform: translateX(5px);
+    }
+    
+    .blog-icon {
+      font-size: 3em;
+    }
+    
+    .tags {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .tag {
+      padding: 6px 12px;
+      background: white;
+      border-radius: 6px;
+      font-size: 0.85em;
+      color: #4F46E5;
+    }
+    
+    .nav-links {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #e2e8f0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #4F46E5;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-links a:hover {
+      background: #4338CA;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a> / Blog
+    </div>
+    
+    <h1>📝 Our Blog</h1>
+    <p>Read our latest articles and insights about technology, design, and innovation.</p>
+    
+    <div class="blog-grid">
+      <div class="blog-post">
+        <div class="blog-post-header">
+          <div>
+            <h2>Building Better User Feedback Systems</h2>
+            <div class="blog-meta">Posted on October 28, 2025 • 5 min read</div>
+          </div>
+          <div class="blog-icon">💡</div>
+        </div>
+        <p>User feedback is crucial for building products that people love. In this article, we explore the best practices for collecting, analyzing, and acting on user feedback to create better experiences.</p>
+        <p>We'll cover everything from choosing the right feedback tools to integrating feedback loops into your development process. Learn how successful companies leverage user insights to drive product decisions.</p>
+        <div class="tags">
+          <span class="tag">UX Design</span>
+          <span class="tag">Product</span>
+          <span class="tag">Feedback</span>
+        </div>
+        <p style="margin-top: 20px;"><a href="#" class="read-more">Read more →</a></p>
+      </div>
+      
+      <div class="blog-post">
+        <div class="blog-post-header">
+          <div>
+            <h2>The Future of Web Development</h2>
+            <div class="blog-meta">Posted on October 25, 2025 • 8 min read</div>
+          </div>
+          <div class="blog-icon">🚀</div>
+        </div>
+        <p>Web development is evolving rapidly with new frameworks, tools, and paradigms. From server components to edge computing, the landscape is changing faster than ever.</p>
+        <p>In this comprehensive guide, we explore emerging trends that will shape the future of web development and how you can prepare for what's coming next.</p>
+        <div class="tags">
+          <span class="tag">Web Dev</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Trends</span>
+        </div>
+        <p style="margin-top: 20px;"><a href="#" class="read-more">Read more →</a></p>
+      </div>
+      
+      <div class="blog-post">
+        <div class="blog-post-header">
+          <div>
+            <h2>Design Systems That Scale</h2>
+            <div class="blog-meta">Posted on October 22, 2025 • 6 min read</div>
+          </div>
+          <div class="blog-icon">🎨</div>
+        </div>
+        <p>Creating a design system that can grow with your product is one of the most important investments a company can make. But how do you build one that actually works?</p>
+        <p>We share our experience building and maintaining design systems, including common pitfalls to avoid and strategies for getting stakeholder buy-in.</p>
+        <div class="tags">
+          <span class="tag">Design</span>
+          <span class="tag">Systems</span>
+          <span class="tag">Scale</span>
+        </div>
+        <p style="margin-top: 20px;"><a href="#" class="read-more">Read more →</a></p>
+      </div>
+      
+      <div class="blog-post">
+        <div class="blog-post-header">
+          <div>
+            <h2>Performance Optimization Tips</h2>
+            <div class="blog-meta">Posted on October 20, 2025 • 7 min read</div>
+          </div>
+          <div class="blog-icon">⚡</div>
+        </div>
+        <p>Speed matters. In this article, we dive deep into practical performance optimization techniques that can dramatically improve your web application's speed.</p>
+        <p>From code splitting and lazy loading to CDN strategies and image optimization, learn the techniques that make a real difference in user experience.</p>
+        <div class="tags">
+          <span class="tag">Performance</span>
+          <span class="tag">Optimization</span>
+          <span class="tag">Speed</span>
+        </div>
+        <p style="margin-top: 20px;"><a href="#" class="read-more">Read more →</a></p>
+      </div>
+    </div>
+    
+    <div class="nav-links">
+      <a href="index.html">← Back to Home</a>
+      <a href="page1.html">Products</a>
+      <a href="page2.html">About</a>
+      <a href="page3.html">Contact</a>
+    </div>
+  </div>
+  
+  <script src="../feedback-widget.js"></script>
+  <script>
+    FeedbackWidget.init();
+  </script>
+</body>
+</html>
+

@@ -204,7 +204,37 @@ export default {
 
 ## 🎭 Demo
 
+### Quick Test
 Open `demo.html` in your browser to see the widget in action.
+
+### Full Demo with Multipage/SPA Support
+Check out `demo-multipage/` folder for comprehensive demos showing:
+- Traditional multipage website support
+- Single-page application (SPA) routing
+- Page-specific feedback markers
+- Route change detection
+
+```bash
+python3 -m http.server 8000
+# Visit http://localhost:8000/demo-multipage/
+```
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) folder:
+
+**Getting Started:**
+- [Quick Start Guide](docs/QUICKSTART.md) - Get up and running in 5 minutes
+- [Browser Console Usage](docs/BROWSER-SNIPPET.md) - Use on ANY website instantly (no installation!)
+- [Integration Guide](docs/INTEGRATION.md) - Add to your website
+
+**Reference:**
+- [CORS Fix Guide](docs/CORS-FIX.md) - Solutions for cross-origin issues
+- [Project Structure](docs/PROJECT-STRUCTURE.md) - Understand the codebase
+- [Changelog](docs/CHANGELOG.md) - Version history
+- [Development Status](docs/status.md) - Current features & roadmap
+
+**[📖 Browse all documentation →](docs/)**
 
 ## 📏 Size
 
