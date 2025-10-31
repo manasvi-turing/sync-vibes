@@ -3,6 +3,8 @@ node_modules/
 
 # HTML files in root directory only
 /*.html
+demo-multipage/
+/demo-multipage
 
 # Logs
 *.log

@@ -28,10 +28,18 @@
     drawStartX: 0,
     drawStartY: 0,
     currentDrawBox: null,
+    markersVisible: true,
 
     // FSID: FB-INIT-001
     init: function(options = {}) {
       this.config = { ...this.config, ...options };
+      
+      // Restore visibility state from localStorage
+      const savedVisibility = localStorage.getItem('feedback_markers_visible');
+      if (savedVisibility !== null) {
+        this.markersVisible = savedVisibility === 'true';
+      }
+      
       this.loadFeedbacks();
       this.injectStyles();
       
@@ -48,11 +56,48 @@
     injectStyles: function() {
       if (document.getElementById('feedback-widget-styles')) return;
       
+      // Add Google Material Symbols font
+      if (!document.getElementById('google-material-symbols')) {
+        const fontLink = document.createElement('link');
+        fontLink.id = 'google-material-symbols';
+        fontLink.rel = 'stylesheet';
+        fontLink.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
+        document.head.appendChild(fontLink);
+      }
+      
       const styles = `
-        .fb-widget-button {
+        .fb-widget-container {
           position: fixed;
           z-index: 999999;
-          padding: 12px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          background: white;
+          padding: 12px;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .fb-widget-container:hover {
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+          transform: translateY(-4px) scale(1.03);
+        }
+        
+        .fb-widget-container.bottom-right { bottom: 20px; right: 20px; }
+        .fb-widget-container.bottom-left { bottom: 20px; left: 20px; }
+        .fb-widget-container.top-right { top: 20px; right: 20px; }
+        .fb-widget-container.top-left { top: 20px; left: 20px; }
+        
+        .fb-button-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 8px;
+          align-items: center;
+        }
+        
+        .fb-widget-button {
+          padding: 10px 14px;
           background: #4F46E5;
           color: white;
           border: none;
@@ -63,6 +108,20 @@
           font-weight: 500;
           box-shadow: 0 4px 6px rgba(0,0,0,0.1);
           transition: all 0.2s;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          white-space: nowrap;
+        }
+        
+        .fb-widget-button span:not(.material-symbols-outlined) {
+          min-width: 70px;
+          text-align: center;
+        }
+        
+        .fb-widget-button .material-symbols-outlined {
+          font-size: 20px;
         }
         
         .fb-widget-button:hover {
@@ -75,10 +134,45 @@
           background: #DC2626;
         }
         
-        .fb-widget-button.bottom-right { bottom: 20px; right: 20px; }
-        .fb-widget-button.bottom-left { bottom: 20px; left: 20px; }
-        .fb-widget-button.top-right { top: 20px; right: 20px; }
-        .fb-widget-button.top-left { top: 20px; left: 20px; }
+        .fb-toggle-markers-btn {
+          min-width: 44px;
+          padding: 10px;
+          justify-content: center;
+        }
+        
+        .fb-stats-bar {
+          display: flex;
+          gap: 8px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .fb-stat-item {
+          flex: 1;
+          padding: 8px;
+          background: rgba(255, 255, 255, 0.95);
+          border: 1px solid #E5E7EB;
+          border-radius: 6px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        
+        .fb-stat-number {
+          color: #4F46E5;
+          font-weight: 700;
+          font-size: 18px;
+          line-height: 1;
+        }
+        
+        .fb-stat-label {
+          color: #6B7280;
+          font-size: 10px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.3px;
+          line-height: 1;
+        }
         
         .fb-feedback-marker {
           position: absolute;
@@ -269,19 +363,77 @@
 
     // FSID: FB-BTN-001
     createToggleButton: function() {
+      // Create container for buttons
+      const container = document.createElement('div');
+      container.className = `fb-widget-container ${this.config.buttonPosition}`;
+      
+      // Create button row
+      const buttonRow = document.createElement('div');
+      buttonRow.className = 'fb-button-row';
+      
+      // Create main toggle button
       const btn = document.createElement('button');
-      btn.className = `fb-widget-button ${this.config.buttonPosition}`;
-      btn.textContent = '💬 Feedback';
+      btn.className = 'fb-widget-button';
+      btn.innerHTML = '<span class="material-symbols-outlined">chat</span><span>SyncVibes</span>';
       btn.onclick = () => this.toggleMode();
-      document.body.appendChild(btn);
+      buttonRow.appendChild(btn);
       this.toggleButton = btn;
+      
+      // Create show/hide markers button
+      const toggleMarkersBtn = document.createElement('button');
+      toggleMarkersBtn.className = 'fb-widget-button fb-toggle-markers-btn';
+      toggleMarkersBtn.innerHTML = this.markersVisible 
+        ? '<span class="material-symbols-outlined">visibility</span>'
+        : '<span class="material-symbols-outlined">visibility_off</span>';
+      toggleMarkersBtn.title = this.markersVisible ? 'Hide markers' : 'Show markers';
+      toggleMarkersBtn.onclick = () => this.toggleMarkers();
+      buttonRow.appendChild(toggleMarkersBtn);
+      this.toggleMarkersButton = toggleMarkersBtn;
+      
+      container.appendChild(buttonRow);
+      
+      // Create stats bar
+      const statsBar = document.createElement('div');
+      statsBar.className = 'fb-stats-bar';
+      statsBar.innerHTML = `
+        <div class="fb-stat-item">
+          <div class="fb-stat-number" id="fb-stat-page">0</div>
+          <div class="fb-stat-label">This Page</div>
+        </div>
+        <div class="fb-stat-item">
+          <div class="fb-stat-number" id="fb-stat-total">0</div>
+          <div class="fb-stat-label">Total</div>
+        </div>
+      `;
+      container.appendChild(statsBar);
+      this.statsBar = statsBar;
+      
+      document.body.appendChild(container);
+      this.widgetContainer = container;
+      
+      // Update stats initially
+      this.updateStats();
     },
 
     // FSID: FB-TOGGLE-001
     toggleMode: function() {
       this.isActive = !this.isActive;
       this.toggleButton.classList.toggle('active', this.isActive);
-      this.toggleButton.textContent = this.isActive ? '✖ Cancel' : '💬 Feedback';
+      this.toggleButton.innerHTML = this.isActive 
+        ? '<span class="material-symbols-outlined">close</span><span>Close</span>'
+        : '<span class="material-symbols-outlined">chat</span><span>SyncVibes</span>';
+      
+      // When activating, ensure markers are visible
+      if (this.isActive && !this.markersVisible) {
+        this.markersVisible = true;
+        const markers = document.querySelectorAll('.fb-feedback-marker');
+        markers.forEach(marker => {
+          marker.style.display = 'block';
+        });
+        this.toggleMarkersButton.innerHTML = '<span class="material-symbols-outlined">visibility</span>';
+        this.toggleMarkersButton.title = 'Hide markers';
+        localStorage.setItem('feedback_markers_visible', 'true');
+      }
       
       // Update cursor and selection
       if (this.isActive) {
@@ -295,6 +447,55 @@
       if (!this.isActive && this.currentBox) {
         this.closeCurrentBox();
       }
+    },
+
+    // FSID: FB-TOGGLE-MARKERS-001
+    toggleMarkers: function() {
+      this.markersVisible = !this.markersVisible;
+      const markers = document.querySelectorAll('.fb-feedback-marker');
+      
+      markers.forEach(marker => {
+        marker.style.display = this.markersVisible ? 'block' : 'none';
+      });
+      
+      this.toggleMarkersButton.innerHTML = this.markersVisible 
+        ? '<span class="material-symbols-outlined">visibility</span>'
+        : '<span class="material-symbols-outlined">visibility_off</span>';
+      this.toggleMarkersButton.title = this.markersVisible ? 'Hide markers' : 'Show markers';
+      
+      // Save visibility state to localStorage
+      localStorage.setItem('feedback_markers_visible', this.markersVisible.toString());
+    },
+
+    // FSID: FB-STATS-001
+    updateStats: function() {
+      const pageStatEl = document.getElementById('fb-stat-page');
+      const totalStatEl = document.getElementById('fb-stat-total');
+      
+      if (!pageStatEl || !totalStatEl) return;
+      
+      // Get total count
+      const totalCount = this.feedbacks.length;
+      
+      // Get current page count
+      const currentUrl = window.location.href;
+      const currentPath = window.location.pathname;
+      const currentHash = window.location.hash;
+      
+      const pageCount = this.feedbacks.filter(fb => {
+        try {
+          const fbUrl = new URL(fb.url, window.location.origin);
+          if (fb.url === currentUrl) return true;
+          if (fbUrl.pathname === currentPath && fbUrl.hash === currentHash) return true;
+          if (fbUrl.pathname === currentPath && !currentHash && !fbUrl.hash) return true;
+          return false;
+        } catch (e) {
+          return fb.pathname === currentPath;
+        }
+      }).length;
+      
+      pageStatEl.textContent = pageCount;
+      totalStatEl.textContent = totalCount;
     },
 
     // FSID: FB-EVENT-001
@@ -544,12 +745,11 @@
       this.createMarker(feedback);
       this.closeCurrentBox();
       
-      // Reset feedback mode
-      this.isActive = false;
-      this.toggleButton.classList.remove('active');
-      this.toggleButton.textContent = '💬 Feedback';
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
+      // Update stats after adding feedback
+      this.updateStats();
+      
+      // Keep feedback mode active so user can add more
+      // (Don't reset isActive, keep cursor as crosshair)
       
       console.log('Feedback saved:', feedback);
     },
@@ -565,6 +765,7 @@
       marker.style.top = `${feedback.position.pageY}px`;
       marker.style.width = `${feedback.position.width}px`;
       marker.style.height = `${feedback.position.height}px`;
+      marker.style.display = this.markersVisible ? 'block' : 'none';
       marker.title = feedback.comment;
       marker.dataset.feedbackId = feedback.id;
       
@@ -657,6 +858,9 @@
       
       matchingFeedbacks.forEach(fb => this.createMarker(fb));
       
+      // Update stats when displaying markers for new page
+      this.updateStats();
+      
       console.log(`Displayed ${matchingFeedbacks.length} markers for ${currentPath}${currentHash}`);
     },
 
@@ -683,6 +887,7 @@
         this.feedbacks = [];
         this.saveFeedbacks();
         this.clearMarkers();
+        this.updateStats();
       }
     },
 
