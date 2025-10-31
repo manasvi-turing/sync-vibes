@@ -5,6 +5,7 @@ node_modules/
 /*.html
 demo-multipage/
 /demo-multipage
+issues.md
 
 # Logs
 *.log

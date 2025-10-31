@@ -59,11 +59,32 @@
     // Check if we need to scroll to annotation after page load
     checkScrollToAnnotation: function() {
       const feedbackId = sessionStorage.getItem('fb_scroll_to_id');
+      const ensureVisible = sessionStorage.getItem('fb_ensure_visible');
+      
       if (feedbackId) {
         sessionStorage.removeItem('fb_scroll_to_id');
         
+        // Ensure markers are visible if requested
+        if (ensureVisible === 'true') {
+          sessionStorage.removeItem('fb_ensure_visible');
+          this.markersVisible = true;
+          localStorage.setItem('feedback_markers_visible', 'true');
+        }
+        
         // Wait a bit for page to settle and markers to be created
         setTimeout(() => {
+          // Update markers visibility if needed
+          if (this.markersVisible) {
+            const markers = document.querySelectorAll('.fb-feedback-marker');
+            markers.forEach(marker => {
+              marker.style.display = 'block';
+            });
+            if (this.toggleMarkersButton) {
+              this.toggleMarkersButton.innerHTML = '<span class="material-symbols-outlined">visibility</span>';
+              this.toggleMarkersButton.title = 'Hide markers';
+            }
+          }
+          
           const feedback = this.feedbacks.find(fb => fb.id === feedbackId);
           if (feedback) {
             this.scrollToAnnotation(feedback);
@@ -354,6 +375,17 @@
           border-color: #4338CA;
         }
         
+        .fb-feedback-marker.active {
+          border: 3px solid #10B981;
+          background: rgba(16, 185, 129, 0.15);
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+          z-index: 999999;
+        }
+        
+        .fb-feedback-marker.active .fb-feedback-marker-label {
+          background: #10B981;
+        }
+        
         .fb-feedback-marker-label {
           position: absolute;
           top: -12px;
@@ -389,7 +421,7 @@
         }
         
         .fb-feedback-box {
-          position: fixed;
+          position: absolute;
           z-index: 1000000;
           background: white;
           border-radius: 12px;
@@ -432,9 +464,50 @@
           justify-content: center;
         }
         
+        .fb-comments-history {
+          max-height: 250px;
+          overflow-y: auto;
+          margin-bottom: 16px;
+          padding: 12px;
+          background: #F9FAFB;
+          border-radius: 8px;
+        }
+        
+        .fb-comment-item {
+          margin-bottom: 12px;
+          padding: 10px;
+          background: white;
+          border-radius: 6px;
+          border-left: 3px solid #4F46E5;
+        }
+        
+        .fb-comment-item:last-child {
+          margin-bottom: 0;
+        }
+        
+        .fb-comment-time {
+          font-size: 11px;
+          color: #6B7280;
+          margin-bottom: 6px;
+        }
+        
+        .fb-comment-text {
+          font-size: 14px;
+          color: #1F2937;
+          line-height: 1.5;
+          word-wrap: break-word;
+        }
+        
+        .fb-no-comments {
+          text-align: center;
+          color: #9CA3AF;
+          font-size: 13px;
+          padding: 20px;
+        }
+        
         .fb-feedback-textarea {
           width: 100%;
-          min-height: 100px;
+          min-height: 80px;
           padding: 12px;
           border: 1px solid #D1D5DB;
           border-radius: 8px;
@@ -452,6 +525,7 @@
         
         .fb-feedback-actions {
           display: flex;
+          flex-wrap: wrap;
           gap: 8px;
           margin-top: 12px;
         }
@@ -465,6 +539,12 @@
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
+          min-width: 0;
+        }
+        
+        .fb-feedback-btn.fb-feedback-btn-danger {
+          flex-basis: 100%;
+          order: 3;
         }
         
         .fb-feedback-btn-primary {
@@ -483,6 +563,19 @@
         
         .fb-feedback-btn-secondary:hover {
           background: #E5E7EB;
+        }
+        
+        .fb-feedback-btn-danger {
+          background: #EF4444;
+          color: white;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          justify-content: center;
+        }
+        
+        .fb-feedback-btn-danger:hover {
+          background: #DC2626;
         }
         
         .fb-feedback-list {
@@ -791,11 +884,27 @@
 
     // Navigate to annotation
     navigateToAnnotation: function(feedback) {
+      // Ensure markers are visible
+      if (!this.markersVisible) {
+        this.markersVisible = true;
+        const markers = document.querySelectorAll('.fb-feedback-marker');
+        markers.forEach(marker => {
+          marker.style.display = 'block';
+        });
+        if (this.toggleMarkersButton) {
+          this.toggleMarkersButton.innerHTML = '<span class="material-symbols-outlined">visibility</span>';
+          this.toggleMarkersButton.title = 'Hide markers';
+        }
+        localStorage.setItem('feedback_markers_visible', 'true');
+      }
+      
       // If different page, navigate first
       const currentUrl = window.location.href;
       if (feedback.url !== currentUrl) {
         // Store feedback ID to scroll to after page load
         sessionStorage.setItem('fb_scroll_to_id', feedback.id);
+        // Store that we want markers visible
+        sessionStorage.setItem('fb_ensure_visible', 'true');
         window.location.href = feedback.url;
       } else {
         // Same page, just scroll
@@ -809,6 +918,9 @@
       const marker = document.querySelector(`[data-feedback-id="${feedback.id}"]`);
       
       if (marker) {
+        // Ensure this marker is visible (even if others are hidden)
+        marker.style.display = 'block';
+        
         // Scroll to marker
         marker.scrollIntoView({ behavior: 'smooth', block: 'center' });
         
@@ -988,11 +1100,14 @@
 
     // FSID: FB-BOX-001
     createFeedbackBox: function(x, y, width, height) {
+      // Close any existing box first
+      this.closeCurrentBox();
+      
       // Create comment input dialog
       const inputBox = document.createElement('div');
       inputBox.className = 'fb-feedback-box';
-      inputBox.style.left = `${Math.min(x + width + 10, window.innerWidth - 340)}px`;
-      inputBox.style.top = `${Math.min(y, window.innerHeight - 250)}px`;
+      inputBox.style.left = `${x + width + 10}px`;
+      inputBox.style.top = `${y}px`;
       
       inputBox.innerHTML = `
         <div class="fb-feedback-box-header">
@@ -1019,6 +1134,18 @@
       inputBox.querySelector('.fb-feedback-box-close').onclick = () => this.cancelFeedback();
       inputBox.querySelector('.fb-feedback-btn-secondary').onclick = () => this.cancelFeedback();
       inputBox.querySelector('.fb-feedback-btn-primary').onclick = () => this.saveFeedback(textarea.value, x, y, width, height);
+      
+      // Support Escape key to close
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          this.cancelFeedback();
+          document.removeEventListener('keydown', escapeHandler);
+        }
+      };
+      document.addEventListener('keydown', escapeHandler);
+      
+      // Store the escape handler so we can remove it when closing
+      inputBox._escapeHandler = escapeHandler;
     },
 
     // FSID: FB-CANCEL-001
@@ -1037,9 +1164,18 @@
         return;
       }
       
+      const feedbackId = this.generateId();
+      const timestamp = Date.now();
+      
       const feedback = {
-        id: this.generateId(),
-        comment: comment.trim(),
+        id: feedbackId,
+        comment: comment.trim(), // Keep for backward compatibility
+        comments: [
+          {
+            text: comment.trim(),
+            timestamp: timestamp
+          }
+        ],
         position: {
           x: x,
           y: y,
@@ -1054,7 +1190,7 @@
         },
         url: window.location.href,
         pathname: window.location.pathname,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(timestamp).toISOString(),
         userAgent: navigator.userAgent,
         screenSize: {
           width: window.screen.width,
@@ -1095,7 +1231,6 @@
       marker.style.width = `${feedback.position.width}px`;
       marker.style.height = `${feedback.position.height}px`;
       marker.style.display = this.markersVisible ? 'block' : 'none';
-      marker.title = feedback.comment;
       marker.dataset.feedbackId = feedback.id;
       
       // Create number label
@@ -1111,6 +1246,9 @@
       
       document.body.appendChild(marker);
       
+      // Set tooltip with comment history
+      this.updateMarkerTooltip(feedback.id);
+      
       console.log('Created marker #' + markerNumber + ' at:', {
         left: marker.style.left,
         top: marker.style.top,
@@ -1121,12 +1259,194 @@
 
     // FSID: FB-SHOW-001
     showFeedback: function(feedback) {
-      alert(`Feedback #${feedback.id}\n\n${feedback.comment}\n\nTime: ${new Date(feedback.timestamp).toLocaleString()}`);
+      // Close any existing box first
+      this.closeCurrentBox();
+      
+      // Get the marker and highlight it
+      const marker = document.querySelector(`[data-feedback-id="${feedback.id}"]`);
+      if (marker) {
+        marker.classList.add('active');
+      }
+      
+      // Create chat-style comment box
+      const inputBox = document.createElement('div');
+      inputBox.className = 'fb-feedback-box';
+      
+      // Position near the marker
+      const markerRect = marker?.getBoundingClientRect();
+      if (markerRect) {
+        inputBox.style.left = `${markerRect.right + window.scrollX + 10}px`;
+        inputBox.style.top = `${markerRect.top + window.scrollY}px`;
+      } else {
+        inputBox.style.left = `${feedback.position.pageX + feedback.position.width + 10}px`;
+        inputBox.style.top = `${feedback.position.pageY}px`;
+      }
+      
+      // Build comments history HTML
+      let commentsHTML = '';
+      if (feedback.comments && feedback.comments.length > 0) {
+        commentsHTML = feedback.comments.map(c => `
+          <div class="fb-comment-item">
+            <div class="fb-comment-time">${new Date(c.timestamp).toLocaleString()}</div>
+            <div class="fb-comment-text">${this.escapeHtml(c.text)}</div>
+          </div>
+        `).join('');
+      }
+      
+      inputBox.innerHTML = `
+        <div class="fb-feedback-box-header">
+          <div class="fb-feedback-box-title">
+            <span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">chat</span>
+            Annotation #${this.feedbacks.indexOf(feedback) + 1}
+          </div>
+          <button class="fb-feedback-box-close">×</button>
+        </div>
+        <div class="fb-comments-history">
+          ${commentsHTML || '<div class="fb-no-comments">No comments yet</div>'}
+        </div>
+        <textarea 
+          class="fb-feedback-textarea" 
+          placeholder="Add a comment..."
+          maxlength="${this.config.maxCommentLength}"
+        ></textarea>
+        <div class="fb-feedback-actions">
+          <button class="fb-feedback-btn fb-feedback-btn-danger">
+            <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
+            Delete
+          </button>
+          <button class="fb-feedback-btn fb-feedback-btn-secondary">Close</button>
+          <button class="fb-feedback-btn fb-feedback-btn-primary">Add Comment</button>
+        </div>
+      `;
+      
+      document.body.appendChild(inputBox);
+      this.currentBox = { element: inputBox, feedback: feedback, marker: marker };
+      
+      const textarea = inputBox.querySelector('.fb-feedback-textarea');
+      textarea.focus();
+      
+      inputBox.querySelector('.fb-feedback-box-close').onclick = () => this.closeCurrentBox();
+      inputBox.querySelector('.fb-feedback-btn-secondary').onclick = () => this.closeCurrentBox();
+      inputBox.querySelector('.fb-feedback-btn-danger').onclick = () => {
+        if (confirm('Are you sure you want to delete this annotation and all its comments?')) {
+          this.deleteAnnotation(feedback.id);
+        }
+      };
+      inputBox.querySelector('.fb-feedback-btn-primary').onclick = () => {
+        const newComment = textarea.value.trim();
+        if (newComment) {
+          this.addCommentToFeedback(feedback.id, newComment);
+          this.closeCurrentBox();
+        } else {
+          alert('Please enter a comment');
+        }
+      };
+      
+      // Support Escape key to close
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          this.closeCurrentBox();
+          document.removeEventListener('keydown', escapeHandler);
+        }
+      };
+      document.addEventListener('keydown', escapeHandler);
+      
+      // Store the escape handler so we can remove it when closing
+      inputBox._escapeHandler = escapeHandler;
+    },
+    
+    // Add comment to existing feedback
+    addCommentToFeedback: function(feedbackId, commentText) {
+      const feedback = this.feedbacks.find(fb => fb.id === feedbackId);
+      if (!feedback) return;
+      
+      // Initialize comments array if it doesn't exist
+      if (!feedback.comments) {
+        feedback.comments = [];
+        // Migrate old comment if it exists
+        if (feedback.comment) {
+          feedback.comments.push({
+            text: feedback.comment,
+            timestamp: feedback.timestamp
+          });
+        }
+      }
+      
+      // Add new comment
+      feedback.comments.push({
+        text: commentText,
+        timestamp: Date.now()
+      });
+      
+      this.saveFeedbacks();
+      
+      // Update marker tooltip
+      this.updateMarkerTooltip(feedbackId);
+      
+      console.log('Added comment to feedback #' + feedbackId);
+    },
+    
+    // Update marker tooltip with all comments
+    updateMarkerTooltip: function(feedbackId) {
+      const feedback = this.feedbacks.find(fb => fb.id === feedbackId);
+      if (!feedback) return;
+      
+      const marker = document.querySelector(`[data-feedback-id="${feedbackId}"]`);
+      if (!marker) return;
+      
+      const comments = feedback.comments || (feedback.comment ? [{text: feedback.comment, timestamp: feedback.timestamp}] : []);
+      const tooltipText = comments.map((c, idx) => 
+        `${idx + 1}. ${c.text} (${new Date(c.timestamp).toLocaleString()})`
+      ).join('\n\n');
+      
+      marker.title = tooltipText || 'No comments';
+    },
+    
+    // Delete annotation
+    deleteAnnotation: function(feedbackId) {
+      // Find the feedback
+      const feedbackIndex = this.feedbacks.findIndex(fb => fb.id === feedbackId);
+      if (feedbackIndex === -1) return;
+      
+      // Remove from array
+      this.feedbacks.splice(feedbackIndex, 1);
+      
+      // Remove marker from DOM
+      const marker = document.querySelector(`[data-feedback-id="${feedbackId}"]`);
+      if (marker) {
+        marker.remove();
+      }
+      
+      // Close the comment box
+      this.closeCurrentBox();
+      
+      // Save to localStorage
+      this.saveFeedbacks();
+      
+      // Update stats
+      this.updateStats();
+      
+      console.log('Deleted annotation #' + feedbackId);
+    },
+    
+    // Escape HTML to prevent XSS
+    escapeHtml: function(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     },
 
     // FSID: FB-CLOSE-001
     closeCurrentBox: function() {
       if (this.currentBox) {
+        // Remove escape key handler if it exists
+        if (this.currentBox.element._escapeHandler) {
+          document.removeEventListener('keydown', this.currentBox.element._escapeHandler);
+        }
+        // Remove active class from marker
+        if (this.currentBox.marker) {
+          this.currentBox.marker.classList.remove('active');
+        }
         this.currentBox.element.remove();
         this.currentBox = null;
       }
