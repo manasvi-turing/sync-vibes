@@ -49,7 +49,27 @@
       
       this.setupEventListeners();
       this.setupRouteChangeListeners();
+      
+      // Check if we need to scroll to a specific annotation
+      this.checkScrollToAnnotation();
+      
       return this;
+    },
+    
+    // Check if we need to scroll to annotation after page load
+    checkScrollToAnnotation: function() {
+      const feedbackId = sessionStorage.getItem('fb_scroll_to_id');
+      if (feedbackId) {
+        sessionStorage.removeItem('fb_scroll_to_id');
+        
+        // Wait a bit for page to settle and markers to be created
+        setTimeout(() => {
+          const feedback = this.feedbacks.find(fb => fb.id === feedbackId);
+          if (feedback) {
+            this.scrollToAnnotation(feedback);
+          }
+        }, 500);
+      }
     },
 
     // FSID: FB-STYLE-001
@@ -172,6 +192,149 @@
           text-transform: uppercase;
           letter-spacing: 0.3px;
           line-height: 1;
+        }
+        
+        .fb-stat-item:hover {
+          background: #F3F4F6;
+          cursor: pointer;
+          transform: translateY(-1px);
+        }
+        
+        .fb-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 1000000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          backdrop-filter: blur(4px);
+        }
+        
+        .fb-modal {
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          max-width: 600px;
+          max-height: 80vh;
+          width: 90%;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .fb-modal-header {
+          padding: 20px 24px;
+          border-bottom: 1px solid #E5E7EB;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        
+        .fb-modal-title {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 18px;
+          font-weight: 600;
+          color: #111827;
+        }
+        
+        .fb-modal-close {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #6B7280;
+          transition: all 0.2s;
+          border-radius: 6px;
+        }
+        
+        .fb-modal-close:hover {
+          background: #F3F4F6;
+          color: #111827;
+        }
+        
+        .fb-modal-body {
+          padding: 16px 24px 24px;
+          overflow-y: auto;
+          flex: 1;
+        }
+        
+        .fb-annotation-item {
+          padding: 16px;
+          border: 1px solid #E5E7EB;
+          border-radius: 10px;
+          margin-bottom: 12px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        
+        .fb-annotation-item:hover {
+          border-color: #4F46E5;
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+          transform: translateY(-2px);
+        }
+        
+        .fb-annotation-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          margin-bottom: 10px;
+        }
+        
+        .fb-annotation-icon {
+          color: #4F46E5;
+          font-size: 20px;
+          flex-shrink: 0;
+        }
+        
+        .fb-annotation-meta {
+          flex: 1;
+        }
+        
+        .fb-annotation-page {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 13px;
+          font-weight: 600;
+          color: #4F46E5;
+          margin-bottom: 4px;
+          word-break: break-all;
+        }
+        
+        .fb-annotation-location {
+          font-family: 'Monaco', 'Courier New', monospace;
+          font-size: 11px;
+          color: #6B7280;
+          word-break: break-all;
+        }
+        
+        .fb-annotation-comment {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 14px;
+          color: #374151;
+          line-height: 1.5;
+          padding-left: 28px;
+        }
+        
+        .fb-empty-state {
+          text-align: center;
+          padding: 40px 20px;
+          color: #9CA3AF;
+        }
+        
+        .fb-empty-state .material-symbols-outlined {
+          font-size: 48px;
+          margin-bottom: 12px;
+          opacity: 0.5;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+          50% { transform: scale(1.1); box-shadow: 0 8px 24px rgba(79, 70, 229, 0.6); }
         }
         
         .fb-feedback-marker {
@@ -408,6 +571,18 @@
       container.appendChild(statsBar);
       this.statsBar = statsBar;
       
+      // Add click handlers to stats
+      const pageStatItem = statsBar.children[0];
+      const totalStatItem = statsBar.children[1];
+      
+      pageStatItem.addEventListener('click', () => {
+        this.openAnnotationsModal('page');
+      });
+      
+      totalStatItem.addEventListener('click', () => {
+        this.openAnnotationsModal('total');
+      });
+      
       document.body.appendChild(container);
       this.widgetContainer = container;
       
@@ -496,6 +671,160 @@
       
       pageStatEl.textContent = pageCount;
       totalStatEl.textContent = totalCount;
+    },
+
+    // Open annotations modal
+    openAnnotationsModal: function(type) {
+      const currentUrl = window.location.href;
+      const currentPath = window.location.pathname;
+      const currentHash = window.location.hash;
+      
+      // Filter feedbacks based on type
+      let annotations = [];
+      if (type === 'page') {
+        annotations = this.feedbacks.filter(fb => {
+          try {
+            const fbUrl = new URL(fb.url, window.location.origin);
+            if (fb.url === currentUrl) return true;
+            if (fbUrl.pathname === currentPath && fbUrl.hash === currentHash) return true;
+            if (fbUrl.pathname === currentPath && !currentHash && !fbUrl.hash) return true;
+            return false;
+          } catch (e) {
+            return fb.pathname === currentPath;
+          }
+        });
+      } else {
+        annotations = this.feedbacks;
+      }
+      
+      // Create modal overlay
+      const overlay = document.createElement('div');
+      overlay.className = 'fb-modal-overlay';
+      
+      // Create modal
+      const modal = document.createElement('div');
+      modal.className = 'fb-modal';
+      
+      // Modal header
+      const header = document.createElement('div');
+      header.className = 'fb-modal-header';
+      
+      const title = document.createElement('div');
+      title.className = 'fb-modal-title';
+      title.innerHTML = `<span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">bookmark</span>${type === 'page' ? 'This Page' : 'All'} Annotations (${annotations.length})`;
+      
+      const closeBtn = document.createElement('button');
+      closeBtn.className = 'fb-modal-close';
+      closeBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
+      closeBtn.title = 'Close';
+      
+      header.appendChild(title);
+      header.appendChild(closeBtn);
+      
+      // Modal body
+      const body = document.createElement('div');
+      body.className = 'fb-modal-body';
+      
+      if (annotations.length === 0) {
+        body.innerHTML = `
+          <div class="fb-empty-state">
+            <span class="material-symbols-outlined">sentiment_satisfied</span>
+            <div>No annotations yet</div>
+          </div>
+        `;
+      } else {
+        annotations.forEach(fb => {
+          const item = document.createElement('div');
+          item.className = 'fb-annotation-item';
+          
+          // Parse URL for display
+          let displayPath = 'Unknown';
+          let displayHash = '';
+          try {
+            const fbUrl = new URL(fb.url, window.location.origin);
+            displayPath = fbUrl.pathname;
+            displayHash = fbUrl.hash;
+          } catch (e) {
+            displayPath = fb.pathname || 'Unknown';
+          }
+          
+          item.innerHTML = `
+            <div class="fb-annotation-header">
+              <span class="material-symbols-outlined fb-annotation-icon">location_on</span>
+              <div class="fb-annotation-meta">
+                <div class="fb-annotation-page">${displayPath}</div>
+                <div class="fb-annotation-location">${displayHash || 'Top of page'} • (${fb.x}, ${fb.y})</div>
+              </div>
+            </div>
+            <div class="fb-annotation-comment">${fb.comment}</div>
+          `;
+          
+          // Click handler to navigate
+          item.addEventListener('click', () => {
+            this.navigateToAnnotation(fb);
+            this.closeModal(overlay);
+          });
+          
+          body.appendChild(item);
+        });
+      }
+      
+      modal.appendChild(header);
+      modal.appendChild(body);
+      overlay.appendChild(modal);
+      
+      // Close handlers
+      closeBtn.addEventListener('click', () => this.closeModal(overlay));
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          this.closeModal(overlay);
+        }
+      });
+      
+      document.body.appendChild(overlay);
+    },
+
+    // Close modal
+    closeModal: function(overlay) {
+      overlay.remove();
+    },
+
+    // Navigate to annotation
+    navigateToAnnotation: function(feedback) {
+      // If different page, navigate first
+      const currentUrl = window.location.href;
+      if (feedback.url !== currentUrl) {
+        // Store feedback ID to scroll to after page load
+        sessionStorage.setItem('fb_scroll_to_id', feedback.id);
+        window.location.href = feedback.url;
+      } else {
+        // Same page, just scroll
+        this.scrollToAnnotation(feedback);
+      }
+    },
+
+    // Scroll to annotation
+    scrollToAnnotation: function(feedback) {
+      // Find the marker by feedback ID
+      const marker = document.querySelector(`[data-feedback-id="${feedback.id}"]`);
+      
+      if (marker) {
+        // Scroll to marker
+        marker.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Highlight temporarily
+        marker.style.animation = 'none';
+        setTimeout(() => {
+          marker.style.animation = 'pulse 1s ease-in-out 3';
+        }, 10);
+      } else {
+        // If marker not found, scroll to position
+        window.scrollTo({
+          top: feedback.position.pageY - window.innerHeight / 2,
+          left: feedback.position.pageX - window.innerWidth / 2,
+          behavior: 'smooth'
+        });
+      }
     },
 
     // FSID: FB-EVENT-001
