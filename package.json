@@ -1,0 +1,41 @@
+{
+  "name": "feedback-widget",
+  "version": "1.0.0",
+  "description": "Ultra-lightweight feedback capture widget for any website",
+  "main": "feedback-widget.js",
+  "jsdelivr": "feedback-widget.min.js",
+  "scripts": {
+    "minify": "terser feedback-widget.js -o feedback-widget.min.js -c -m",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "feedback",
+    "widget",
+    "annotation",
+    "user-feedback",
+    "comments",
+    "lightweight",
+    "vanilla-js",
+    "cdn"
+  ],
+  "author": "Ultralab Knowledge Sharing",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/[username]/[repo].git"
+  },
+  "bugs": {
+    "url": "https://github.com/[username]/[repo]/issues"
+  },
+  "homepage": "https://github.com/[username]/[repo]#readme",
+  "files": [
+    "feedback-widget.js",
+    "feedback-widget.min.js",
+    "README.md"
+  ],
+  "cdn": "https://cdn.jsdelivr.net/gh/[username]/[repo]/feedback-widget.min.js",
+  "devDependencies": {
+    "terser": "^5.0.0"
+  }
+}
+

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Widget Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 200vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .hero {
+      background: white;
+      border-radius: 20px;
+      padding: 60px;
+      margin-bottom: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .subtitle {
+      font-size: 1.2em;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+    
+    .feature-card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    
+    .feature-title {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+    
+    .feature-desc {
+      color: #666;
+    }
+    
+    .controls {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .controls h2 {
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+    
+    .code-block {
+      background: #1f2937;
+      color: #f9fafb;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    
+    .code-block code {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    
+    .instructions {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 30px 0;
+    }
+    
+    .instructions h3 {
+      color: #92400e;
+      margin-bottom: 10px;
+    }
+    
+    .instructions ol {
+      margin-left: 20px;
+      color: #78350f;
+    }
+    
+    .instructions li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>🎯 Feedback Widget</h1>
+      <p class="subtitle">Ultra-lightweight feedback capture for any website</p>
+      
+      <div class="instructions">
+        <h3>📝 How to Use:</h3>
+        <ol>
+          <li>Click the "💬 Feedback" button at the bottom-right</li>
+          <li>Click anywhere on the page to place a feedback marker</li>
+          <li>Type your comment and click "Save"</li>
+          <li>Click on any marker to view the feedback</li>
+          <li>Use the controls below to export/import/clear feedbacks</li>
+        </ol>
+      </div>
+      
+      <div class="code-block">
+        <code>&lt;!-- Add to any website --&gt;<br>
+&lt;script src="feedback-widget.js"&gt;&lt;/script&gt;<br>
+&lt;script&gt;<br>
+  FeedbackWidget.init({<br>
+    buttonPosition: 'bottom-right',<br>
+    theme: 'light'<br>
+  });<br>
+&lt;/script&gt;</code>
+      </div>
+    </div>
+    
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title">Lightweight</h3>
+        <p class="feature-desc">Only ~8KB minified. No dependencies. Pure vanilla JavaScript.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3 class="feature-title">Beautiful UI</h3>
+        <p class="feature-desc">Modern, clean interface that works on any website design.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3 class="feature-title">Position Tracking</h3>
+        <p class="feature-desc">Captures exact coordinates, viewport size, and scroll position.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h3 class="feature-title">Local Storage</h3>
+        <p class="feature-desc">Automatically saves feedbacks to browser localStorage.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3 class="feature-title">Export/Import</h3>
+        <p class="feature-desc">Easy JSON export for backend sync or sharing.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3 class="feature-title">CDN Ready</h3>
+        <p class="feature-desc">Works with jsDelivr, React, Next.js, or vanilla HTML.</p>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <h2>⚙️ Controls</h2>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="exportFeedbacks()">📤 Export JSON</button>
+        <button class="btn btn-secondary" onclick="showFeedbackCount()">📊 Count Feedbacks</button>
+        <button class="btn btn-danger" onclick="FeedbackWidget.clearFeedbacks()">🗑️ Clear All</button>
+      </div>
+      
+      <div id="output" style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px; display: none;">
+        <h3 style="margin-bottom: 10px;">Output:</h3>
+        <pre id="output-content" style="overflow-x: auto; font-size: 12px;"></pre>
+      </div>
+    </div>
+  </div>
+  
+  <script src="feedback-widget.js"></script>
+  <script>
+    // Initialize the feedback widget
+    FeedbackWidget.init({
+      buttonPosition: 'bottom-right',
+      theme: 'light',
+      maxCommentLength: 500
+    });
+    
+    // Helper functions for demo
+    function exportFeedbacks() {
+      const feedbacks = FeedbackWidget.exportFeedbacks();
+      const output = document.getElementById('output');
+      const content = document.getElementById('output-content');
+      
+      content.textContent = JSON.stringify(feedbacks, null, 2);
+      output.style.display = 'block';
+      
+      // Copy to clipboard
+      navigator.clipboard.writeText(JSON.stringify(feedbacks, null, 2))
+        .then(() => alert('✅ Feedbacks exported and copied to clipboard!'))
+        .catch(err => console.error('Failed to copy:', err));
+    }
+    
+    function showFeedbackCount() {
+      const feedbacks = FeedbackWidget.exportFeedbacks();
+      alert(`📊 Total Feedbacks: ${feedbacks.length}`);
+    }
+    
+    // Log for demo purposes
+    console.log('🎯 Feedback Widget Demo Ready!');
+    console.log('Available methods:');
+    console.log('- FeedbackWidget.exportFeedbacks()');
+    console.log('- FeedbackWidget.importFeedbacks(data)');
+    console.log('- FeedbackWidget.clearFeedbacks()');
+  </script>
+</body>
+</html>
+
+asd

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback Widget Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
+    }
+    
+    .test-area {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #333;
+    }
+    
+    .info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-area">
+    <h1>🔍 Feedback Widget Debug Test</h1>
+    
+    <p><strong>Instructions:</strong></p>
+    <ol>
+      <li>Click the "💬 Feedback" button (bottom-right)</li>
+      <li>Your cursor should turn to a crosshair ✛</li>
+      <li>Click anywhere in this area</li>
+      <li>Type a comment and click "Save"</li>
+      <li>A numbered box should appear where you clicked</li>
+    </ol>
+    
+    <div class="info">
+      <strong>Debug Info (check browser console for more details):</strong>
+      <div id="debug-info"></div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+      <button onclick="checkMarkers()">🔍 Check Markers</button>
+      <button onclick="showFeedbacks()">📊 Show Feedbacks</button>
+      <button onclick="testMarker()">🧪 Test Manual Marker</button>
+    </div>
+  </div>
+  
+  <!-- Load the widget -->
+  <script src="feedback-widget.js"></script>
+  
+  <script>
+    // Initialize
+    console.log('Initializing feedback widget...');
+    FeedbackWidget.init({
+      buttonPosition: 'bottom-right'
+    });
+    
+    // Debug functions
+    function checkMarkers() {
+      const markers = document.querySelectorAll('.fb-feedback-marker');
+      console.log('Found markers:', markers);
+      console.log('Total markers:', markers.length);
+      
+      markers.forEach((marker, i) => {
+        console.log(`Marker ${i}:`, {
+          position: marker.style.position,
+          left: marker.style.left,
+          top: marker.style.top,
+          display: marker.style.display,
+          visibility: marker.style.visibility,
+          zIndex: marker.style.zIndex,
+          computed: window.getComputedStyle(marker)
+        });
+      });
+      
+      const debugDiv = document.getElementById('debug-info');
+      debugDiv.innerHTML = `
+        <p>Found ${markers.length} marker(s)</p>
+        ${Array.from(markers).map((m, i) => 
+          `<p>Marker ${i + 1}: left=${m.style.left}, top=${m.style.top}, text="${m.textContent}"</p>`
+        ).join('')}
+      `;
+      
+      if (markers.length === 0) {
+        debugDiv.innerHTML += '<p style="color: red;">⚠️ No markers found in DOM!</p>';
+      }
+    }
+    
+    function showFeedbacks() {
+      const feedbacks = FeedbackWidget.exportFeedbacks();
+      console.log('All feedbacks:', feedbacks);
+      alert(`Total feedbacks: ${feedbacks.length}\n\n${JSON.stringify(feedbacks, null, 2)}`);
+    }
+    
+    function testMarker() {
+      // Create a test marker manually
+      const testDiv = document.createElement('div');
+      testDiv.className = 'fb-feedback-marker';
+      testDiv.textContent = 'TEST';
+      testDiv.style.left = '200px';
+      testDiv.style.top = '200px';
+      testDiv.style.position = 'absolute';
+      document.body.appendChild(testDiv);
+      
+      console.log('Created test marker:', testDiv);
+      console.log('Test marker styles:', window.getComputedStyle(testDiv));
+      
+      setTimeout(() => {
+        alert('Test marker created at 200px, 200px. Do you see it?');
+      }, 100);
+    }
+    
+    // Auto-check after any feedback is saved
+    setTimeout(() => {
+      console.log('Widget ready. Check console for debug info.');
+    }, 500);
+  </script>
+</body>
+</html>
+
