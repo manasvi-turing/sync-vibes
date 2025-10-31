@@ -38,7 +38,7 @@ No servers. No databases. No "please create an account to leave feedback." Just 
 - Comments section, but you can literally point at stuff
 - That thing where you and your friend share a Google Doc, except it's ANY website
 
-## The Vibe Check ✨
+## The Vibe Check
 
 ```
 Traditional Feedback: "The header alignment seems off"
@@ -68,7 +68,7 @@ Open any website. Press F12. Paste the console snippet. Feel powerful.
 **Option 3: The "I Don't Trust You" Method**
 Look at the code first. It's like 2000 lines. We're all consenting adults here.
 
-## Current Status: Serverless Chaos 🎪
+## Current Status: Serverless Chaos
 
 Right now, everything is client-side. Your annotations live in your browser's localStorage like a digital hoarder's dream. 
 
@@ -91,7 +91,7 @@ They import it, add their comments, export it back. It's like playing hot potato
 - Teachers annotating student work (wholesome use case!)
 - Anyone who's ever said "no but like... THAT part"
 
-## The Philosophy 🧘
+## The Philosophy
 
 1. **Feedback should be visual**: Words lie, boxes don't.
 2. **Collaboration shouldn't need a server**: Sometimes you just want to share a file and call it a day.
