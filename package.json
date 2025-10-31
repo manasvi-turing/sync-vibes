@@ -1,17 +1,19 @@
 {
-  "name": "feedback-widget",
+  "name": "syncvibe",
   "version": "1.0.0",
-  "description": "Ultra-lightweight feedback capture widget for any website",
-  "main": "feedback-widget.js",
-  "jsdelivr": "feedback-widget.min.js",
+  "description": "Ultra-lightweight collaborative annotation widget for any website",
+  "main": "syncvibe.js",
+  "jsdelivr": "syncvibe.min.js",
   "scripts": {
-    "minify": "terser feedback-widget.js -o feedback-widget.min.js -c -m",
+    "minify": "terser syncvibe.js -o syncvibe.min.js -c -m",
     "serve": "python3 -m http.server 8000"
   },
   "keywords": [
+    "syncvibe",
+    "annotations",
+    "collaboration",
     "feedback",
     "widget",
-    "annotation",
     "user-feedback",
     "comments",
     "lightweight",
@@ -29,11 +31,11 @@
   },
   "homepage": "https://github.com/[username]/[repo]#readme",
   "files": [
-    "feedback-widget.js",
-    "feedback-widget.min.js",
+    "syncvibe.js",
+    "syncvibe.min.js",
     "README.md"
   ],
-  "cdn": "https://cdn.jsdelivr.net/gh/[username]/[repo]/feedback-widget.min.js",
+  "cdn": "https://cdn.jsdelivr.net/gh/[username]/[repo]/syncvibe.min.js",
   "devDependencies": {
     "terser": "^5.0.0"
   }

@@ -7,7 +7,7 @@
 (function(window) {
   'use strict';
 
-  const FeedbackWidget = {
+  const SyncVibe = {
     version: '1.0.0',
     feedbacks: [],
     config: {
@@ -39,7 +39,7 @@
     },
 
     injectStyles: function() {
-      if (document.getElementById('feedback-widget-styles')) return;
+      if (document.getElementById('syncvibe-styles')) return;
       
       const styles = `
         .fb-widget-button {
@@ -223,7 +223,7 @@
       `;
       
       const styleEl = document.createElement('style');
-      styleEl.id = 'feedback-widget-styles';
+      styleEl.id = 'syncvibe-styles';
       styleEl.textContent = styles;
       document.head.appendChild(styleEl);
     },
@@ -602,10 +602,10 @@
     }
   };
 
-  window.FeedbackWidget = FeedbackWidget;
+  window.SyncVibe = SyncVibe;
   
   // Auto-initialize
-  FeedbackWidget.init();
+  SyncVibe.init();
   console.log('%c✅ Feedback Widget Loaded!', 'background: #4F46E5; color: white; padding: 8px 16px; border-radius: 4px; font-weight: bold;');
   console.log('Click the 💬 Feedback button in the bottom-right corner to start!');
 

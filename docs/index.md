@@ -37,9 +37,9 @@ Welcome to the Feedback Widget documentation! This directory contains comprehens
 
 ### Use Case 1: Add to Your Website
 ```html
-<script src="feedback-widget.min.js"></script>
+<script src="syncvibe.min.js"></script>
 <script>
-  FeedbackWidget.init();
+  SyncVibe.init();
 </script>
 ```
 [Full Guide →](INTEGRATION.md)
@@ -68,8 +68,8 @@ userfeedback/
 │   ├── CHANGELOG.md              # Version history
 │   └── status.md                 # Development status
 ├── demo-multipage/               # Demo pages
-├── feedback-widget.js            # Main source code
-├── feedback-widget.min.js        # Minified version
+├── syncvibe.js            # Main source code
+├── syncvibe.min.js        # Minified version
 ├── CONSOLE-SNIPPET.js            # Copy-paste for console
 ├── bookmarklet.html              # Bookmarklet generator
 └── README.md                     # Main README
@@ -130,7 +130,7 @@ open http://localhost:8000/demo-multipage/
 cat ../CONSOLE-SNIPPET.js
 
 # Build minified version
-npx terser ../feedback-widget.js -c -m -o ../feedback-widget.min.js
+npx terser ../syncvibe.js -c -m -o ../syncvibe.min.js
 ```
 
 ---

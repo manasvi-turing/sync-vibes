@@ -6,7 +6,7 @@ Browsers block HTTPS websites from loading scripts from local HTTP servers (like
 
 **Error you're seeing:**
 ```
-Access to script at 'http://localhost:8000/feedback-widget.js' from origin 'https://www.geeksforgeeks.org' 
+Access to script at 'http://localhost:8000/syncvibe.js' from origin 'https://www.geeksforgeeks.org' 
 has been blocked by CORS policy: Permission was denied for this request to access the `unknown` address space.
 ```
 
@@ -71,15 +71,15 @@ For permanent use, host the script online:
 2. Enable GitHub Pages in Settings
 3. Your script will be available at:
    ```
-   https://USERNAME.github.io/REPO/feedback-widget.min.js
+   https://USERNAME.github.io/REPO/syncvibe.min.js
    ```
 
 4. Use this snippet:
 ```javascript
 (function(){
   const s=document.createElement('script');
-  s.src='https://USERNAME.github.io/REPO/feedback-widget.min.js';
-  s.onload=()=>FeedbackWidget.init();
+  s.src='https://USERNAME.github.io/REPO/syncvibe.min.js';
+  s.onload=()=>SyncVibe.init();
   document.head.appendChild(s);
 })();
 ```
@@ -91,7 +91,7 @@ For permanent use, host the script online:
 Create a bookmarklet with the entire code embedded:
 
 ```javascript
-javascript:(function(){/* ENTIRE MINIFIED CODE HERE */FeedbackWidget.init();})();
+javascript:(function(){/* ENTIRE MINIFIED CODE HERE */SyncVibe.init();})();
 ```
 
 This is what's in `CONSOLE-SNIPPET.js` - it includes everything inline!

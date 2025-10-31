@@ -29,8 +29,8 @@ userfeedback/
 │   ├── page4.html                 # Blog page
 │   └── spa-demo.html              # SPA demo
 │
-├── 🎯 feedback-widget.js          # Main source code
-├── 📦 feedback-widget.min.js      # Minified version
+├── 🎯 syncvibe.js          # Main source code
+├── 📦 syncvibe.min.js      # Minified version
 ├── 📋 CONSOLE-SNIPPET.js          # Copy-paste snippet
 ├── 🔖 bookmarklet.html            # Bookmarklet generator
 │
@@ -65,7 +65,7 @@ userfeedback/
 python3 -m http.server 8000
 
 # Minify the code
-npx terser feedback-widget.js -c -m -o feedback-widget.min.js --comments "/^!/"
+npx terser syncvibe.js -c -m -o syncvibe.min.js --comments "/^!/"
 
 # View project structure
 tree -L 2
@@ -79,8 +79,8 @@ open http://localhost:8000/demo-multipage/
 ### Core Files
 | File | Description | Size |
 |------|-------------|------|
-| `feedback-widget.js` | Main unminified source | ~20KB |
-| `feedback-widget.min.js` | Production minified version | ~8KB |
+| `syncvibe.js` | Main unminified source | ~20KB |
+| `syncvibe.min.js` | Production minified version | ~8KB |
 | `CONSOLE-SNIPPET.js` | Standalone console version | ~18KB |
 | `bookmarklet.html` | Tool to generate bookmarklets | Visual tool |
 

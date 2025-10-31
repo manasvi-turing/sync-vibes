@@ -8,21 +8,21 @@ Complete guide for integrating Feedback Widget into different frameworks and pla
 
 ```html
 <!-- Latest version -->
-<script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/feedback-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/syncvibe.min.js"></script>
 ```
 
 ### 2. NPM (Coming Soon)
 
 ```bash
-npm install feedback-widget
+npm install syncvibe
 ```
 
 ### 3. Direct Download
 
-Download `feedback-widget.js` and include it in your project:
+Download `syncvibe.js` and include it in your project:
 
 ```html
-<script src="/js/feedback-widget.js"></script>
+<script src="/js/syncvibe.js"></script>
 ```
 
 ---
@@ -39,8 +39,8 @@ import { useEffect } from 'react';
 function App() {
   useEffect(() => {
     // Initialize widget after component mounts
-    if (window.FeedbackWidget) {
-      window.FeedbackWidget.init({
+    if (window.SyncVibe) {
+      window.SyncVibe.init({
         buttonPosition: 'bottom-right',
         maxCommentLength: 500
       });
@@ -48,7 +48,7 @@ function App() {
   }, []);
 
   const exportFeedbacks = () => {
-    const data = window.FeedbackWidget.exportFeedbacks();
+    const data = window.SyncVibe.exportFeedbacks();
     console.log('Feedbacks:', data);
   };
 
@@ -66,27 +66,27 @@ function App() {
 ```jsx
 import { useEffect, useState } from 'react';
 
-function useFeedbackWidget(config = {}) {
+function useSyncVibe(config = {}) {
   const [feedbackCount, setFeedbackCount] = useState(0);
 
   useEffect(() => {
-    if (window.FeedbackWidget) {
-      window.FeedbackWidget.init(config);
+    if (window.SyncVibe) {
+      window.SyncVibe.init(config);
       updateCount();
     }
   }, []);
 
   const updateCount = () => {
-    const feedbacks = window.FeedbackWidget.exportFeedbacks();
+    const feedbacks = window.SyncVibe.exportFeedbacks();
     setFeedbackCount(feedbacks.length);
   };
 
   const exportFeedbacks = () => {
-    return window.FeedbackWidget.exportFeedbacks();
+    return window.SyncVibe.exportFeedbacks();
   };
 
   const clearFeedbacks = () => {
-    window.FeedbackWidget.clearFeedbacks();
+    window.SyncVibe.clearFeedbacks();
     updateCount();
   };
 
@@ -100,7 +100,7 @@ function useFeedbackWidget(config = {}) {
 
 // Usage
 function App() {
-  const { feedbackCount, exportFeedbacks } = useFeedbackWidget({
+  const { feedbackCount, exportFeedbacks } = useSyncVibe({
     buttonPosition: 'bottom-right'
   });
 
@@ -129,9 +129,9 @@ export default function RootLayout({ children }) {
       <body>
         {children}
         <Script 
-          src="/feedback-widget.js" 
+          src="/syncvibe.js" 
           onLoad={() => {
-            window.FeedbackWidget.init({
+            window.SyncVibe.init({
               buttonPosition: 'bottom-right'
             });
           }}
@@ -151,8 +151,8 @@ import Script from 'next/script';
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.FeedbackWidget) {
-      window.FeedbackWidget.init({
+    if (typeof window !== 'undefined' && window.SyncVibe) {
+      window.SyncVibe.init({
         buttonPosition: 'bottom-right'
       });
     }
@@ -160,7 +160,7 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <Script src="/feedback-widget.js" strategy="afterInteractive" />
+      <Script src="/syncvibe.js" strategy="afterInteractive" />
       <Component {...pageProps} />
     </>
   );
@@ -179,8 +179,8 @@ import { useEffect } from 'react';
 
 export default function FeedbackProvider() {
   useEffect(() => {
-    if (window.FeedbackWidget) {
-      window.FeedbackWidget.init();
+    if (window.SyncVibe) {
+      window.SyncVibe.init();
     }
   }, []);
 
@@ -224,15 +224,15 @@ export default {
   name: 'App',
   setup() {
     onMounted(() => {
-      if (window.FeedbackWidget) {
-        window.FeedbackWidget.init({
+      if (window.SyncVibe) {
+        window.SyncVibe.init({
           buttonPosition: 'bottom-right'
         });
       }
     });
 
     const exportFeedbacks = () => {
-      const data = window.FeedbackWidget.exportFeedbacks();
+      const data = window.SyncVibe.exportFeedbacks();
       console.log('Feedbacks:', data);
     };
 
@@ -257,8 +257,8 @@ export default {
 export default {
   name: 'App',
   mounted() {
-    if (window.FeedbackWidget) {
-      window.FeedbackWidget.init({
+    if (window.SyncVibe) {
+      window.SyncVibe.init({
         buttonPosition: 'bottom-right'
       });
     }
@@ -277,7 +277,7 @@ import { Component, OnInit } from '@angular/core';
 
 declare global {
   interface Window {
-    FeedbackWidget: any;
+    SyncVibe: any;
   }
 }
 
@@ -287,22 +287,22 @@ declare global {
 })
 export class AppComponent implements OnInit {
   ngOnInit() {
-    if (window.FeedbackWidget) {
-      window.FeedbackWidget.init({
+    if (window.SyncVibe) {
+      window.SyncVibe.init({
         buttonPosition: 'bottom-right'
       });
     }
   }
 
   exportFeedbacks() {
-    return window.FeedbackWidget.exportFeedbacks();
+    return window.SyncVibe.exportFeedbacks();
   }
 }
 ```
 
 ```html
 <!-- index.html -->
-<script src="/assets/feedback-widget.js"></script>
+<script src="/assets/syncvibe.js"></script>
 ```
 
 ---
@@ -315,15 +315,15 @@ export class AppComponent implements OnInit {
   import { onMount } from 'svelte';
 
   onMount(() => {
-    if (window.FeedbackWidget) {
-      window.FeedbackWidget.init({
+    if (window.SyncVibe) {
+      window.SyncVibe.init({
         buttonPosition: 'bottom-right'
       });
     }
   });
 
   function exportFeedbacks() {
-    const data = window.FeedbackWidget.exportFeedbacks();
+    const data = window.SyncVibe.exportFeedbacks();
     console.log('Feedbacks:', data);
   }
 </script>
@@ -343,7 +343,7 @@ export class AppComponent implements OnInit {
 ```javascript
 // sync-feedbacks.js
 async function syncFeedbacks() {
-  const feedbacks = FeedbackWidget.exportFeedbacks();
+  const feedbacks = SyncVibe.exportFeedbacks();
   
   try {
     const response = await fetch('/api/feedbacks', {
@@ -365,7 +365,7 @@ async function syncFeedbacks() {
     if (response.ok) {
       console.log('✅ Feedbacks synced successfully');
       // Optionally clear local storage after successful sync
-      // FeedbackWidget.clearFeedbacks();
+      // SyncVibe.clearFeedbacks();
     }
   } catch (error) {
     console.error('❌ Failed to sync feedbacks:', error);
@@ -455,7 +455,7 @@ export default async function handler(req, res) {
 ## ⚙️ Configuration Options
 
 ```javascript
-FeedbackWidget.init({
+SyncVibe.init({
   // Button position: 'bottom-right', 'bottom-left', 'top-right', 'top-left'
   buttonPosition: 'bottom-right',
   
@@ -481,16 +481,16 @@ FeedbackWidget.init({
 
 ```javascript
 // Initialize without button
-FeedbackWidget.init({ showButton: false });
+SyncVibe.init({ showButton: false });
 
 // Create custom trigger
 document.getElementById('custom-feedback-btn').addEventListener('click', () => {
-  FeedbackWidget.toggleMode();
+  SyncVibe.toggleMode();
 });
 
 // Custom export with filtering
 function exportPageFeedbacks() {
-  const allFeedbacks = FeedbackWidget.exportFeedbacks();
+  const allFeedbacks = SyncVibe.exportFeedbacks();
   const pageFeedbacks = allFeedbacks.filter(
     fb => fb.pathname === window.location.pathname
   );
@@ -501,7 +501,7 @@ function exportPageFeedbacks() {
 ### TypeScript Definitions
 
 ```typescript
-// feedback-widget.d.ts
+// syncvibe.d.ts
 interface FeedbackPosition {
   x: number;
   y: number;
@@ -527,7 +527,7 @@ interface Feedback {
   };
 }
 
-interface FeedbackWidgetConfig {
+interface SyncVibeConfig {
   buttonPosition?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
   showButton?: boolean;
   theme?: 'light' | 'dark';
@@ -535,9 +535,9 @@ interface FeedbackWidgetConfig {
   storageKey?: string;
 }
 
-interface FeedbackWidget {
+interface SyncVibe {
   version: string;
-  init(config?: FeedbackWidgetConfig): FeedbackWidget;
+  init(config?: SyncVibeConfig): SyncVibe;
   exportFeedbacks(): Feedback[];
   importFeedbacks(feedbacks: Feedback[]): void;
   clearFeedbacks(): void;
@@ -546,7 +546,7 @@ interface FeedbackWidget {
 
 declare global {
   interface Window {
-    FeedbackWidget: FeedbackWidget;
+    SyncVibe: SyncVibe;
   }
 }
 ```
@@ -557,7 +557,7 @@ declare global {
 
 ### Vercel
 
-1. Add `feedback-widget.js` to your `public` folder
+1. Add `syncvibe.js` to your `public` folder
 2. Reference it in your HTML/layout
 3. Deploy normally
 
@@ -569,7 +569,7 @@ Same as Vercel - add to `public` folder.
 
 ```html
 <!-- Use jsdelivr CDN -->
-<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/feedback-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/syncvibe.min.js"></script>
 ```
 
 ---
@@ -580,11 +580,11 @@ Same as Vercel - add to `public` folder.
 
 ```javascript
 // Check if it's loaded
-console.log(window.FeedbackWidget);
+console.log(window.SyncVibe);
 
 // Manually trigger init
-if (window.FeedbackWidget) {
-  window.FeedbackWidget.init();
+if (window.SyncVibe) {
+  window.SyncVibe.init();
 }
 ```
 

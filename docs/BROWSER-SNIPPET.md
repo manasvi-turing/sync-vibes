@@ -34,9 +34,9 @@ Once you host the file on GitHub or a CDN, use this snippet:
 (function() {
   const script = document.createElement('script');
   // Replace with your actual CDN URL
-  script.src = 'https://cdn.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO/feedback-widget.min.js';
+  script.src = 'https://cdn.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO/syncvibe.min.js';
   script.onload = function() {
-    FeedbackWidget.init();
+    SyncVibe.init();
     console.log('✅ Feedback Widget loaded!');
   };
   document.head.appendChild(script);
@@ -52,7 +52,7 @@ Create a bookmarklet that you can click to activate the widget on any page:
 **Step 2:** Set the URL to this (for local testing):
 
 ```javascript
-javascript:(function(){const s=document.createElement('script');s.src='http://localhost:8000/feedback-widget.js';s.onload=()=>{FeedbackWidget.init();console.log('✅ Widget loaded!')};document.head.appendChild(s)})();
+javascript:(function(){const s=document.createElement('script');s.src='http://localhost:8000/syncvibe.js';s.onload=()=>{SyncVibe.init();console.log('✅ Widget loaded!')};document.head.appendChild(s)})();
 ```
 
 **Step 3:** Click the bookmark on any website to activate the feedback widget!
@@ -60,7 +60,7 @@ javascript:(function(){const s=document.createElement('script');s.src='http://lo
 ### Bookmarklet for CDN (Production):
 
 ```javascript
-javascript:(function(){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO/feedback-widget.min.js';s.onload=()=>FeedbackWidget.init();document.head.appendChild(s)})();
+javascript:(function(){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/YOUR-USERNAME/YOUR-REPO/syncvibe.min.js';s.onload=()=>SyncVibe.init();document.head.appendChild(s)})();
 ```
 
 ## 🎯 How to Use
@@ -85,9 +85,9 @@ javascript:(function(){const s=document.createElement('script');s.src='https://c
 ```javascript
 (function() {
   const script = document.createElement('script');
-  script.src = 'http://localhost:8000/feedback-widget.js';
+  script.src = 'http://localhost:8000/syncvibe.js';
   script.onload = function() {
-    FeedbackWidget.init({
+    SyncVibe.init({
       buttonPosition: 'top-left',        // or 'top-right', 'bottom-left', 'bottom-right'
       maxCommentLength: 1000,            // Maximum characters in feedback
       storageKey: 'my_custom_feedback',  // Custom localStorage key
@@ -104,23 +104,23 @@ After adding feedback, run in console:
 
 ```javascript
 // View all feedback
-console.log(FeedbackWidget.exportFeedbacks());
+console.log(SyncVibe.exportFeedbacks());
 
 // Copy feedback as JSON
-copy(JSON.stringify(FeedbackWidget.exportFeedbacks(), null, 2));
+copy(JSON.stringify(SyncVibe.exportFeedbacks(), null, 2));
 ```
 
 ### Clear All Feedback
 
 ```javascript
-FeedbackWidget.clearFeedbacks();
+SyncVibe.clearFeedbacks();
 ```
 
 ### Import Feedback
 
 ```javascript
 const feedbackData = [/* your feedback array */];
-FeedbackWidget.importFeedbacks(feedbackData);
+SyncVibe.importFeedbacks(feedbackData);
 ```
 
 ## 🌐 Real-World Examples
@@ -131,8 +131,8 @@ FeedbackWidget.importFeedbacks(feedbackData);
 // Open console
 (function() {
   const script = document.createElement('script');
-  script.src = 'http://localhost:8000/feedback-widget.js';
-  script.onload = () => FeedbackWidget.init();
+  script.src = 'http://localhost:8000/syncvibe.js';
+  script.onload = () => SyncVibe.init();
   document.head.appendChild(script);
 })();
 // Add feedback to any part of GitHub's UI!
@@ -163,7 +163,7 @@ While this console method works great, we could also create:
 Just want it to work? Copy this one-liner:
 
 ```javascript
-(function(){const s=document.createElement('script');s.src='http://localhost:8000/feedback-widget.js';s.onload=()=>{FeedbackWidget.init();console.log('✅ Ready!')};document.head.appendChild(s)})();
+(function(){const s=document.createElement('script');s.src='http://localhost:8000/syncvibe.js';s.onload=()=>{SyncVibe.init();console.log('✅ Ready!')};document.head.appendChild(s)})();
 ```
 
 ## 🎯 Use Cases

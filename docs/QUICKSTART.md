@@ -9,8 +9,8 @@ Get started with Feedback Widget in under 2 minutes!
 Add these two lines to your HTML:
 
 ```html
-<script src="feedback-widget.js"></script>
-<script>FeedbackWidget.init();</script>
+<script src="syncvibe.js"></script>
+<script>SyncVibe.init();</script>
 ```
 
 **That's it!** 🎉
@@ -18,8 +18,8 @@ Add these two lines to your HTML:
 ### Option 2: CDN (Recommended)
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/feedback-widget.min.js"></script>
-<script>FeedbackWidget.init();</script>
+<script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/syncvibe.min.js"></script>
+<script>SyncVibe.init();</script>
 ```
 
 ---
@@ -49,9 +49,9 @@ python3 -m http.server 8000
   <h1>Hello World</h1>
   
   <!-- Add at the end of body -->
-  <script src="feedback-widget.js"></script>
+  <script src="syncvibe.js"></script>
   <script>
-    FeedbackWidget.init();
+    SyncVibe.init();
   </script>
 </body>
 </html>
@@ -73,7 +73,7 @@ Done! ✅
 ### Custom Position
 
 ```javascript
-FeedbackWidget.init({
+SyncVibe.init({
   buttonPosition: 'top-left' // top-left, top-right, bottom-left, bottom-right
 });
 ```
@@ -84,10 +84,10 @@ FeedbackWidget.init({
 <button id="my-feedback-btn">Leave Feedback</button>
 
 <script>
-  FeedbackWidget.init({ showButton: false });
+  SyncVibe.init({ showButton: false });
   
   document.getElementById('my-feedback-btn').onclick = () => {
-    FeedbackWidget.toggleMode();
+    SyncVibe.toggleMode();
   };
 </script>
 ```
@@ -95,7 +95,7 @@ FeedbackWidget.init({
 ### Limit Comment Length
 
 ```javascript
-FeedbackWidget.init({
+SyncVibe.init({
   maxCommentLength: 200 // Default: 500
 });
 ```
@@ -107,7 +107,7 @@ FeedbackWidget.init({
 ### Export to Console
 
 ```javascript
-const feedbacks = FeedbackWidget.exportFeedbacks();
+const feedbacks = SyncVibe.exportFeedbacks();
 console.log(feedbacks);
 ```
 
@@ -115,7 +115,7 @@ console.log(feedbacks);
 
 ```javascript
 function downloadFeedbacks() {
-  const feedbacks = FeedbackWidget.exportFeedbacks();
+  const feedbacks = SyncVibe.exportFeedbacks();
   const blob = new Blob([JSON.stringify(feedbacks, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -132,13 +132,13 @@ const myFeedbacks = [
   { id: "abc", comment: "Great!", position: {...}, ... }
 ];
 
-FeedbackWidget.importFeedbacks(myFeedbacks);
+SyncVibe.importFeedbacks(myFeedbacks);
 ```
 
 ### Clear All
 
 ```javascript
-FeedbackWidget.clearFeedbacks(); // Shows confirmation
+SyncVibe.clearFeedbacks(); // Shows confirmation
 ```
 
 ---
@@ -152,7 +152,7 @@ import { useEffect } from 'react';
 
 function App() {
   useEffect(() => {
-    FeedbackWidget.init();
+    SyncVibe.init();
   }, []);
   
   return <div>My App</div>;
@@ -168,8 +168,8 @@ import Script from 'next/script';
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Script src="/feedback-widget.js" onLoad={() => {
-        FeedbackWidget.init();
+      <Script src="/syncvibe.js" onLoad={() => {
+        SyncVibe.init();
       }} />
       <Component {...pageProps} />
     </>
@@ -183,7 +183,7 @@ function MyApp({ Component, pageProps }) {
 <script>
 export default {
   mounted() {
-    FeedbackWidget.init();
+    SyncVibe.init();
   }
 }
 </script>
@@ -197,7 +197,7 @@ export default {
 
 ```javascript
 async function syncToBackend() {
-  const feedbacks = FeedbackWidget.exportFeedbacks();
+  const feedbacks = SyncVibe.exportFeedbacks();
   
   await fetch('/api/feedbacks', {
     method: 'POST',
@@ -248,17 +248,17 @@ Each feedback object contains:
 ### Hide Button, Use Custom Trigger
 
 ```javascript
-FeedbackWidget.init({ showButton: false });
+SyncVibe.init({ showButton: false });
 
 document.getElementById('custom-btn').onclick = () => {
-  FeedbackWidget.toggleMode();
+  SyncVibe.toggleMode();
 };
 ```
 
 ### Custom Storage Key
 
 ```javascript
-FeedbackWidget.init({
+SyncVibe.init({
   storageKey: 'my_custom_feedback_key'
 });
 ```
@@ -271,11 +271,11 @@ FeedbackWidget.init({
 
 ```javascript
 // Check if loaded
-console.log(window.FeedbackWidget);
+console.log(window.SyncVibe);
 
 // Force init
-if (window.FeedbackWidget) {
-  window.FeedbackWidget.init();
+if (window.SyncVibe) {
+  window.SyncVibe.init();
 }
 ```
 
@@ -308,7 +308,7 @@ location.reload();
 ## 💡 Pro Tips
 
 1. **Test locally first**: Open `demo.html` to see how it works
-2. **Start simple**: Just use `FeedbackWidget.init()` - that's enough!
+2. **Start simple**: Just use `SyncVibe.init()` - that's enough!
 3. **Export often**: Use the export feature to backup feedbacks
 4. **Plan backend later**: Focus on capturing feedback first, sync later
 5. **Check console**: All methods return data - check browser console
@@ -320,13 +320,13 @@ location.reload();
 ### User Testing
 ```javascript
 // Collect feedback during beta testing
-FeedbackWidget.init({ buttonPosition: 'top-right' });
+SyncVibe.init({ buttonPosition: 'top-right' });
 ```
 
 ### Bug Reporting
 ```javascript
 // Let users report bugs visually
-FeedbackWidget.init({ maxCommentLength: 1000 });
+SyncVibe.init({ maxCommentLength: 1000 });
 ```
 
 ### Design Review

@@ -1,8 +1,8 @@
-I'll take a look at the feedback-widget.js file to understand how it handles multipage apps and SPAs.
+I'll take a look at the syncvibe.js file to understand how it handles multipage apps and SPAs.
 
 [1 tool called]
 
-Great question! Looking at the `feedback-widget.js`, I can see an interesting situation with how it handles multipage apps and SPAs:
+Great question! Looking at the `syncvibe.js`, I can see an interesting situation with how it handles multipage apps and SPAs:
 
 ## Current Behavior
 

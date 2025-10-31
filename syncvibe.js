@@ -1,24 +1,24 @@
 /**
- * FeedbackWidget - Ultra-lightweight feedback capture library
+ * SyncVibe - Ultra-lightweight feedback capture library
  * @version 1.0.0
  * @license MIT
  * 
  * Usage:
- *   <script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/feedback-widget.min.js"></script>
- *   <script>FeedbackWidget.init();</script>
+ *   <script src="https://cdn.jsdelivr.net/gh/[username]/[repo]/syncvibe.min.js"></script>
+ *   <script>SyncVibe.init();</script>
  */
 
 (function(window) {
   'use strict';
 
   // FSID: FB-CORE-001
-  const FeedbackWidget = {
+  const SyncVibe = {
     version: '1.0.0',
     feedbacks: [],
     currentUser: null,
     config: {
-      storageKey: 'feedback_widget_data',
-      userStorageKey: 'feedback_widget_user',
+      storageKey: 'syncvibe_data',
+      userStorageKey: 'syncvibe_user',
       showButton: true,
       buttonPosition: 'bottom-right',
       theme: 'light',
@@ -40,7 +40,7 @@
       this.loadUser();
       
       // Restore visibility state from localStorage
-      const savedVisibility = localStorage.getItem('feedback_markers_visible');
+      const savedVisibility = localStorage.getItem('syncvibe_markers_visible');
       if (savedVisibility !== null) {
         this.markersVisible = savedVisibility === 'true';
       }
@@ -98,20 +98,20 @@
     // Show user profile modal
     showUserProfileModal: function() {
       const overlay = document.createElement('div');
-      overlay.className = 'fb-modal-overlay';
+      overlay.className = 'sv-modal-overlay';
       overlay.style.zIndex = '10000000';
       
       const modal = document.createElement('div');
-      modal.className = 'fb-modal fb-user-profile-modal';
+      modal.className = 'sv-modal sv-user-profile-modal';
       
       modal.innerHTML = `
-        <div class="fb-modal-header">
-          <div class="fb-modal-title">
+        <div class="sv-modal-header">
+          <div class="sv-modal-title">
             <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">person</span>
             Welcome to SyncVibes!
           </div>
         </div>
-        <div class="fb-modal-body">
+        <div class="sv-modal-body">
           <p style="color: #6B7280; margin-bottom: 20px; line-height: 1.5;">
             Please enter your details to start annotating. Your name will appear on all your comments.
           </p>
@@ -121,7 +121,7 @@
             </label>
             <input 
               type="text" 
-              id="fb-user-name" 
+              id="sv-user-name" 
               placeholder="John Doe"
               style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;"
               required
@@ -133,13 +133,13 @@
             </label>
             <input 
               type="email" 
-              id="fb-user-email" 
+              id="sv-user-email" 
               placeholder="john@example.com"
               style="width: 100%; padding: 10px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 14px; font-family: inherit; box-sizing: border-box;"
             />
           </div>
           <button 
-            id="fb-user-profile-save"
+            id="sv-user-profile-save"
             style="width: 100%; padding: 12px; background: #4F46E5; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;"
             onmouseover="this.style.background='#4338CA'"
             onmouseout="this.style.background='#4F46E5'"
@@ -154,13 +154,13 @@
       
       // Focus on name input
       setTimeout(() => {
-        document.getElementById('fb-user-name').focus();
+        document.getElementById('sv-user-name').focus();
       }, 100);
       
       // Handle save
-      const saveBtn = document.getElementById('fb-user-profile-save');
-      const nameInput = document.getElementById('fb-user-name');
-      const emailInput = document.getElementById('fb-user-email');
+      const saveBtn = document.getElementById('sv-user-profile-save');
+      const nameInput = document.getElementById('sv-user-name');
+      const emailInput = document.getElementById('sv-user-email');
       
       const handleSave = () => {
         const name = nameInput.value.trim();
@@ -208,14 +208,14 @@
         if (ensureVisible === 'true') {
           sessionStorage.removeItem('fb_ensure_visible');
           this.markersVisible = true;
-          localStorage.setItem('feedback_markers_visible', 'true');
+          localStorage.setItem('syncvibe_markers_visible', 'true');
         }
         
         // Wait a bit for page to settle and markers to be created
         setTimeout(() => {
           // Update markers visibility if needed
           if (this.markersVisible) {
-            const markers = document.querySelectorAll('.fb-feedback-marker');
+            const markers = document.querySelectorAll('.sv-feedback-marker');
             markers.forEach(marker => {
               marker.style.display = 'block';
             });
@@ -235,7 +235,7 @@
 
     // FSID: FB-STYLE-001
     injectStyles: function() {
-      if (document.getElementById('feedback-widget-styles')) return;
+      if (document.getElementById('syncvibe-styles')) return;
       
       // Add Google Material Symbols font
       if (!document.getElementById('google-material-symbols')) {
@@ -247,7 +247,7 @@
       }
       
       const styles = `
-        .fb-widget-container {
+        .sv-widget-container {
           position: fixed;
           z-index: 999999;
           display: flex;
@@ -260,24 +260,24 @@
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        .fb-widget-container:hover {
+        .sv-widget-container:hover {
           box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
           transform: translateY(-4px) scale(1.03);
         }
         
-        .fb-widget-container.bottom-right { bottom: 20px; right: 20px; }
-        .fb-widget-container.bottom-left { bottom: 20px; left: 20px; }
-        .fb-widget-container.top-right { top: 20px; right: 20px; }
-        .fb-widget-container.top-left { top: 20px; left: 20px; }
+        .sv-widget-container.bottom-right { bottom: 20px; right: 20px; }
+        .sv-widget-container.bottom-left { bottom: 20px; left: 20px; }
+        .sv-widget-container.top-right { top: 20px; right: 20px; }
+        .sv-widget-container.top-left { top: 20px; left: 20px; }
         
-        .fb-button-row {
+        .sv-button-row {
           display: grid;
           grid-template-columns: 1fr auto;
           gap: 8px;
           align-items: center;
         }
         
-        .fb-widget-button {
+        .sv-widget-button {
           padding: 10px 14px;
           background: #4F46E5;
           color: white;
@@ -296,38 +296,38 @@
           white-space: nowrap;
         }
         
-        .fb-widget-button span:not(.material-symbols-outlined) {
+        .sv-widget-button span:not(.material-symbols-outlined) {
           min-width: 70px;
           text-align: center;
         }
         
-        .fb-widget-button .material-symbols-outlined {
+        .sv-widget-button .material-symbols-outlined {
           font-size: 20px;
         }
         
-        .fb-widget-button:hover {
+        .sv-widget-button:hover {
           background: #4338CA;
           transform: translateY(-2px);
           box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
         
-        .fb-widget-button.active {
+        .sv-widget-button.active {
           background: #DC2626;
         }
         
-        .fb-toggle-markers-btn {
+        .sv-toggle-markers-btn {
           min-width: 44px;
           padding: 10px;
           justify-content: center;
         }
         
-        .fb-stats-bar {
+        .sv-stats-bar {
           display: flex;
           gap: 8px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
-        .fb-stat-item {
+        .sv-stat-item {
           flex: 1;
           padding: 8px;
           background: rgba(255, 255, 255, 0.95);
@@ -339,14 +339,14 @@
           gap: 4px;
         }
         
-        .fb-stat-number {
+        .sv-stat-number {
           color: #4F46E5;
           font-weight: 700;
           font-size: 18px;
           line-height: 1;
         }
         
-        .fb-stat-label {
+        .sv-stat-label {
           color: #6B7280;
           font-size: 10px;
           font-weight: 500;
@@ -355,19 +355,19 @@
           line-height: 1;
         }
         
-        .fb-stat-item:hover {
+        .sv-stat-item:hover {
           background: #F3F4F6;
           cursor: pointer;
           transform: translateY(-1px);
         }
         
-        .fb-actions-bar {
+        .sv-actions-bar {
           display: flex;
           gap: 8px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
-        .fb-action-btn {
+        .sv-action-btn {
           flex: 1;
           padding: 8px;
           background: rgba(255, 255, 255, 0.95);
@@ -385,22 +385,22 @@
           transition: all 0.2s;
         }
         
-        .fb-action-btn .material-symbols-outlined {
+        .sv-action-btn .material-symbols-outlined {
           font-size: 16px;
         }
         
-        .fb-action-btn:hover {
+        .sv-action-btn:hover {
           background: #4F46E5;
           color: white;
           border-color: #4F46E5;
           transform: translateY(-1px);
         }
         
-        .fb-action-label {
+        .sv-action-label {
           font-size: 11px;
         }
         
-        .fb-modal-overlay {
+        .sv-modal-overlay {
           position: fixed;
           top: 0;
           left: 0;
@@ -414,7 +414,7 @@
           backdrop-filter: blur(4px);
         }
         
-        .fb-modal {
+        .sv-modal {
           background: white;
           border-radius: 16px;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -425,7 +425,7 @@
           flex-direction: column;
         }
         
-        .fb-modal-header {
+        .sv-modal-header {
           padding: 20px 24px;
           border-bottom: 1px solid #E5E7EB;
           display: flex;
@@ -433,14 +433,14 @@
           align-items: center;
         }
         
-        .fb-modal-title {
+        .sv-modal-title {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           font-size: 18px;
           font-weight: 600;
           color: #111827;
         }
         
-        .fb-modal-close {
+        .sv-modal-close {
           background: none;
           border: none;
           cursor: pointer;
@@ -453,18 +453,18 @@
           border-radius: 6px;
         }
         
-        .fb-modal-close:hover {
+        .sv-modal-close:hover {
           background: #F3F4F6;
           color: #111827;
         }
         
-        .fb-modal-body {
+        .sv-modal-body {
           padding: 16px 24px 24px;
           overflow-y: auto;
           flex: 1;
         }
         
-        .fb-annotation-item {
+        .sv-annotation-item {
           padding: 16px;
           border: 1px solid #E5E7EB;
           border-radius: 10px;
@@ -473,30 +473,30 @@
           transition: all 0.2s;
         }
         
-        .fb-annotation-item:hover {
+        .sv-annotation-item:hover {
           border-color: #4F46E5;
           box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
           transform: translateY(-2px);
         }
         
-        .fb-annotation-header {
+        .sv-annotation-header {
           display: flex;
           align-items: flex-start;
           gap: 8px;
           margin-bottom: 10px;
         }
         
-        .fb-annotation-icon {
+        .sv-annotation-icon {
           color: #4F46E5;
           font-size: 20px;
           flex-shrink: 0;
         }
         
-        .fb-annotation-meta {
+        .sv-annotation-meta {
           flex: 1;
         }
         
-        .fb-annotation-page {
+        .sv-annotation-page {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           font-size: 13px;
           font-weight: 600;
@@ -505,14 +505,14 @@
           word-break: break-all;
         }
         
-        .fb-annotation-location {
+        .sv-annotation-location {
           font-family: 'Monaco', 'Courier New', monospace;
           font-size: 11px;
           color: #6B7280;
           word-break: break-all;
         }
         
-        .fb-annotation-comment {
+        .sv-annotation-comment {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           font-size: 14px;
           color: #374151;
@@ -520,13 +520,13 @@
           padding-left: 28px;
         }
         
-        .fb-empty-state {
+        .sv-empty-state {
           text-align: center;
           padding: 40px 20px;
           color: #9CA3AF;
         }
         
-        .fb-empty-state .material-symbols-outlined {
+        .sv-empty-state .material-symbols-outlined {
           font-size: 48px;
           margin-bottom: 12px;
           opacity: 0.5;
@@ -537,7 +537,7 @@
           50% { transform: scale(1.1); box-shadow: 0 8px 24px rgba(79, 70, 229, 0.6); }
         }
         
-        .fb-feedback-marker {
+        .sv-feedback-marker {
           position: absolute;
           border: 3px solid #4F46E5;
           background: rgba(79, 70, 229, 0.1);
@@ -548,24 +548,24 @@
           pointer-events: auto;
         }
         
-        .fb-feedback-marker:hover {
+        .sv-feedback-marker:hover {
           background: rgba(79, 70, 229, 0.15);
           box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
           border-color: #4338CA;
         }
         
-        .fb-feedback-marker.active {
+        .sv-feedback-marker.active {
           border: 3px solid #10B981;
           background: rgba(16, 185, 129, 0.15);
           box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
           z-index: 999999;
         }
         
-        .fb-feedback-marker.active .fb-feedback-marker-label {
+        .sv-feedback-marker.active .sv-feedback-marker-label {
           background: #10B981;
         }
         
-        .fb-feedback-marker-label {
+        .sv-feedback-marker-label {
           position: absolute;
           top: -12px;
           left: -12px;
@@ -585,13 +585,13 @@
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
-        .fb-feedback-marker-label::before {
+        .sv-feedback-marker-label::before {
           content: '#';
           margin-right: 2px;
           opacity: 0.9;
         }
         
-        .fb-drawing-box {
+        .sv-drawing-box {
           position: absolute;
           border: 2px dashed #4F46E5;
           background: rgba(79, 70, 229, 0.08);
@@ -599,7 +599,7 @@
           pointer-events: none;
         }
         
-        .fb-feedback-box {
+        .sv-feedback-box {
           position: absolute;
           z-index: 1000000;
           background: white;
@@ -608,28 +608,28 @@
           padding: 20px;
           width: 320px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          animation: fb-slide-in 0.3s ease-out;
+          animation: sv-slide-in 0.3s ease-out;
         }
         
-        @keyframes fb-slide-in {
+        @keyframes sv-slide-in {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
         
-        .fb-feedback-box-header {
+        .sv-feedback-box-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 16px;
         }
         
-        .fb-feedback-box-title {
+        .sv-feedback-box-title {
           font-size: 16px;
           font-weight: 600;
           color: #1F2937;
         }
         
-        .fb-feedback-box-close {
+        .sv-feedback-box-close {
           background: none;
           border: none;
           font-size: 24px;
@@ -643,7 +643,7 @@
           justify-content: center;
         }
         
-        .fb-comments-history {
+        .sv-comments-history {
           max-height: 250px;
           overflow-y: auto;
           margin-bottom: 16px;
@@ -652,7 +652,7 @@
           border-radius: 8px;
         }
         
-        .fb-comment-item {
+        .sv-comment-item {
           margin-bottom: 12px;
           padding: 10px;
           background: white;
@@ -660,11 +660,11 @@
           border-left: 3px solid #4F46E5;
         }
         
-        .fb-comment-item:last-child {
+        .sv-comment-item:last-child {
           margin-bottom: 0;
         }
         
-        .fb-comment-header {
+        .sv-comment-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -672,46 +672,46 @@
           gap: 8px;
         }
         
-        .fb-comment-author {
+        .sv-comment-author {
           font-size: 12px;
           font-weight: 600;
           color: #4F46E5;
         }
         
-        .fb-comment-author-me {
+        .sv-comment-author-me {
           font-size: 12px;
           font-weight: 600;
           color: #10B981;
         }
         
-        .fb-comment-author-me::after {
+        .sv-comment-author-me::after {
           content: ' (you)';
           font-weight: 400;
           font-size: 11px;
           color: #6B7280;
         }
         
-        .fb-comment-time {
+        .sv-comment-time {
           font-size: 11px;
           color: #9CA3AF;
           white-space: nowrap;
         }
         
-        .fb-comment-text {
+        .sv-comment-text {
           font-size: 14px;
           color: #1F2937;
           line-height: 1.5;
           word-wrap: break-word;
         }
         
-        .fb-no-comments {
+        .sv-no-comments {
           text-align: center;
           color: #9CA3AF;
           font-size: 13px;
           padding: 20px;
         }
         
-        .fb-feedback-textarea {
+        .sv-feedback-textarea {
           width: 100%;
           min-height: 80px;
           padding: 12px;
@@ -723,20 +723,20 @@
           box-sizing: border-box;
         }
         
-        .fb-feedback-textarea:focus {
+        .sv-feedback-textarea:focus {
           outline: none;
           border-color: #4F46E5;
           box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
         
-        .fb-feedback-actions {
+        .sv-feedback-actions {
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
           margin-top: 12px;
         }
         
-        .fb-feedback-btn {
+        .sv-feedback-btn {
           flex: 1;
           padding: 10px;
           border: none;
@@ -748,30 +748,30 @@
           min-width: 0;
         }
         
-        .fb-feedback-btn.fb-feedback-btn-danger {
+        .sv-feedback-btn.sv-feedback-btn-danger {
           flex-basis: 100%;
           order: 3;
         }
         
-        .fb-feedback-btn-primary {
+        .sv-feedback-btn-primary {
           background: #4F46E5;
           color: white;
         }
         
-        .fb-feedback-btn-primary:hover {
+        .sv-feedback-btn-primary:hover {
           background: #4338CA;
         }
         
-        .fb-feedback-btn-secondary {
+        .sv-feedback-btn-secondary {
           background: #F3F4F6;
           color: #374151;
         }
         
-        .fb-feedback-btn-secondary:hover {
+        .sv-feedback-btn-secondary:hover {
           background: #E5E7EB;
         }
         
-        .fb-feedback-btn-danger {
+        .sv-feedback-btn-danger {
           background: #EF4444;
           color: white;
           display: flex;
@@ -780,11 +780,11 @@
           justify-content: center;
         }
         
-        .fb-feedback-btn-danger:hover {
+        .sv-feedback-btn-danger:hover {
           background: #DC2626;
         }
         
-        .fb-feedback-list {
+        .sv-feedback-list {
           position: fixed;
           right: 20px;
           top: 20px;
@@ -798,7 +798,7 @@
           overflow-y: auto;
         }
         
-        .fb-feedback-item {
+        .sv-feedback-item {
           padding: 12px;
           background: #F9FAFB;
           border-radius: 8px;
@@ -806,17 +806,17 @@
           font-size: 13px;
         }
         
-        .fb-feedback-item-text {
+        .sv-feedback-item-text {
           color: #374151;
           margin-bottom: 4px;
         }
         
-        .fb-feedback-item-meta {
+        .sv-feedback-item-meta {
           color: #9CA3AF;
           font-size: 11px;
         }
         
-        .fb-viewport-warning {
+        .sv-viewport-warning {
           position: fixed;
           top: 80px;
           left: 50%;
@@ -824,10 +824,10 @@
           z-index: 1000001;
           max-width: 600px;
           width: 90%;
-          animation: fb-slide-in 0.3s ease-out;
+          animation: sv-slide-in 0.3s ease-out;
         }
         
-        .fb-viewport-warning-content {
+        .sv-viewport-warning-content {
           background: white;
           border: 2px solid #F59E0B;
           border-radius: 16px;
@@ -835,7 +835,7 @@
           overflow: hidden;
         }
         
-        .fb-viewport-warning-header {
+        .sv-viewport-warning-header {
           background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
           padding: 16px 20px;
           display: flex;
@@ -844,33 +844,33 @@
           color: white;
         }
         
-        .fb-viewport-warning-header strong {
+        .sv-viewport-warning-header strong {
           flex: 1;
           font-size: 16px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
         
-        .fb-viewport-warning-icon {
+        .sv-viewport-warning-icon {
           font-size: 24px;
         }
         
-        .fb-viewport-warning-body {
+        .sv-viewport-warning-body {
           padding: 20px;
         }
         
-        .fb-viewport-metric {
+        .sv-viewport-metric {
           margin-bottom: 20px;
           padding-bottom: 20px;
           border-bottom: 1px solid #E5E7EB;
         }
         
-        .fb-viewport-metric:last-of-type {
+        .sv-viewport-metric:last-of-type {
           border-bottom: none;
           margin-bottom: 0;
           padding-bottom: 0;
         }
         
-        .fb-viewport-metric-label {
+        .sv-viewport-metric-label {
           display: flex;
           align-items: center;
           gap: 8px;
@@ -881,12 +881,12 @@
           font-size: 14px;
         }
         
-        .fb-viewport-metric-label .material-symbols-outlined {
+        .sv-viewport-metric-label .material-symbols-outlined {
           font-size: 20px;
           color: #6B7280;
         }
         
-        .fb-viewport-metric-values {
+        .sv-viewport-metric-values {
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -896,12 +896,12 @@
           padding-left: 28px;
         }
         
-        .fb-viewport-metric-values strong {
+        .sv-viewport-metric-values strong {
           color: #111827;
           font-family: 'Monaco', 'Courier New', monospace;
         }
         
-        .fb-status-badge {
+        .sv-status-badge {
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -914,17 +914,17 @@
           transition: all 0.3s;
         }
         
-        .fb-status-badge.fb-status-ok {
+        .sv-status-badge.sv-status-ok {
           background: #10B981;
           color: white;
         }
         
-        .fb-status-badge.fb-status-error {
+        .sv-status-badge.sv-status-error {
           background: #EF4444;
           color: white;
         }
         
-        .fb-viewport-warning-hint {
+        .sv-viewport-warning-hint {
           display: flex;
           align-items: flex-start;
           gap: 8px;
@@ -937,7 +937,7 @@
           margin-top: 16px;
         }
         
-        .fb-viewport-warning-hint .material-symbols-outlined {
+        .sv-viewport-warning-hint .material-symbols-outlined {
           font-size: 20px;
           color: #9CA3AF;
           flex-shrink: 0;
@@ -945,7 +945,7 @@
       `;
       
       const styleEl = document.createElement('style');
-      styleEl.id = 'feedback-widget-styles';
+      styleEl.id = 'syncvibe-styles';
       styleEl.textContent = styles;
       document.head.appendChild(styleEl);
     },
@@ -954,15 +954,15 @@
     createToggleButton: function() {
       // Create container for buttons
       const container = document.createElement('div');
-      container.className = `fb-widget-container ${this.config.buttonPosition}`;
+      container.className = `sv-widget-container ${this.config.buttonPosition}`;
       
       // Create button row
       const buttonRow = document.createElement('div');
-      buttonRow.className = 'fb-button-row';
+      buttonRow.className = 'sv-button-row';
       
       // Create main toggle button
       const btn = document.createElement('button');
-      btn.className = 'fb-widget-button';
+      btn.className = 'sv-widget-button';
       btn.innerHTML = '<span class="material-symbols-outlined">chat</span><span>SyncVibes</span>';
       btn.onclick = () => this.toggleMode();
       buttonRow.appendChild(btn);
@@ -970,7 +970,7 @@
       
       // Create show/hide markers button
       const toggleMarkersBtn = document.createElement('button');
-      toggleMarkersBtn.className = 'fb-widget-button fb-toggle-markers-btn';
+      toggleMarkersBtn.className = 'sv-widget-button sv-toggle-markers-btn';
       toggleMarkersBtn.innerHTML = this.markersVisible 
         ? '<span class="material-symbols-outlined">visibility</span>'
         : '<span class="material-symbols-outlined">visibility_off</span>';
@@ -983,15 +983,15 @@
       
       // Create stats bar
       const statsBar = document.createElement('div');
-      statsBar.className = 'fb-stats-bar';
+      statsBar.className = 'sv-stats-bar';
       statsBar.innerHTML = `
-        <div class="fb-stat-item">
-          <div class="fb-stat-number" id="fb-stat-page">0</div>
-          <div class="fb-stat-label">This Page</div>
+        <div class="sv-stat-item">
+          <div class="sv-stat-number" id="sv-stat-page">0</div>
+          <div class="sv-stat-label">This Page</div>
         </div>
-        <div class="fb-stat-item">
-          <div class="fb-stat-number" id="fb-stat-total">0</div>
-          <div class="fb-stat-label">Total</div>
+        <div class="sv-stat-item">
+          <div class="sv-stat-number" id="sv-stat-total">0</div>
+          <div class="sv-stat-label">Total</div>
         </div>
       `;
       container.appendChild(statsBar);
@@ -1011,15 +1011,15 @@
       
       // Create export/import bar
       const actionsBar = document.createElement('div');
-      actionsBar.className = 'fb-actions-bar';
+      actionsBar.className = 'sv-actions-bar';
       actionsBar.innerHTML = `
-        <button class="fb-action-btn" id="fb-export-btn" title="Export annotations to JSON file">
+        <button class="sv-action-btn" id="sv-export-btn" title="Export annotations to JSON file">
           <span class="material-symbols-outlined">download</span>
-          <span class="fb-action-label">Export</span>
+          <span class="sv-action-label">Export</span>
         </button>
-        <button class="fb-action-btn" id="fb-import-btn" title="Import annotations from JSON file">
+        <button class="sv-action-btn" id="sv-import-btn" title="Import annotations from JSON file">
           <span class="material-symbols-outlined">upload</span>
-          <span class="fb-action-label">Import</span>
+          <span class="sv-action-label">Import</span>
         </button>
       `;
       container.appendChild(actionsBar);
@@ -1038,8 +1038,8 @@
       this.widgetContainer = container;
       
       // Then add click handlers (after elements are in DOM)
-      document.getElementById('fb-export-btn').addEventListener('click', () => this.exportToFile());
-      document.getElementById('fb-import-btn').addEventListener('click', () => fileInput.click());
+      document.getElementById('sv-export-btn').addEventListener('click', () => this.exportToFile());
+      document.getElementById('sv-import-btn').addEventListener('click', () => fileInput.click());
       
       // Update stats initially
       this.updateStats();
@@ -1056,13 +1056,13 @@
       // When activating, ensure markers are visible
       if (this.isActive && !this.markersVisible) {
         this.markersVisible = true;
-        const markers = document.querySelectorAll('.fb-feedback-marker');
+        const markers = document.querySelectorAll('.sv-feedback-marker');
         markers.forEach(marker => {
           marker.style.display = 'block';
         });
         this.toggleMarkersButton.innerHTML = '<span class="material-symbols-outlined">visibility</span>';
         this.toggleMarkersButton.title = 'Hide markers';
-        localStorage.setItem('feedback_markers_visible', 'true');
+        localStorage.setItem('syncvibe_markers_visible', 'true');
       }
       
       // Update cursor and selection
@@ -1082,11 +1082,16 @@
     // FSID: FB-TOGGLE-MARKERS-001
     toggleMarkers: function() {
       this.markersVisible = !this.markersVisible;
-      const markers = document.querySelectorAll('.fb-feedback-marker');
+      const markers = document.querySelectorAll('.sv-feedback-marker');
       
       markers.forEach(marker => {
         marker.style.display = this.markersVisible ? 'block' : 'none';
       });
+      
+      // Close any open comment box when hiding markers
+      if (!this.markersVisible && this.currentBox) {
+        this.closeCurrentBox();
+      }
       
       this.toggleMarkersButton.innerHTML = this.markersVisible 
         ? '<span class="material-symbols-outlined">visibility</span>'
@@ -1094,13 +1099,13 @@
       this.toggleMarkersButton.title = this.markersVisible ? 'Hide markers' : 'Show markers';
       
       // Save visibility state to localStorage
-      localStorage.setItem('feedback_markers_visible', this.markersVisible.toString());
+      localStorage.setItem('syncvibe_markers_visible', this.markersVisible.toString());
     },
 
     // FSID: FB-STATS-001
     updateStats: function() {
-      const pageStatEl = document.getElementById('fb-stat-page');
-      const totalStatEl = document.getElementById('fb-stat-total');
+      const pageStatEl = document.getElementById('sv-stat-page');
+      const totalStatEl = document.getElementById('sv-stat-total');
       
       if (!pageStatEl || !totalStatEl) return;
       
@@ -1154,22 +1159,22 @@
       
       // Create modal overlay
       const overlay = document.createElement('div');
-      overlay.className = 'fb-modal-overlay';
+      overlay.className = 'sv-modal-overlay';
       
       // Create modal
       const modal = document.createElement('div');
-      modal.className = 'fb-modal';
+      modal.className = 'sv-modal';
       
       // Modal header
       const header = document.createElement('div');
-      header.className = 'fb-modal-header';
+      header.className = 'sv-modal-header';
       
       const title = document.createElement('div');
-      title.className = 'fb-modal-title';
+      title.className = 'sv-modal-title';
       title.innerHTML = `<span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">bookmark</span>${type === 'page' ? 'This Page' : 'All'} Annotations (${annotations.length})`;
       
       const closeBtn = document.createElement('button');
-      closeBtn.className = 'fb-modal-close';
+      closeBtn.className = 'sv-modal-close';
       closeBtn.innerHTML = '<span class="material-symbols-outlined">close</span>';
       closeBtn.title = 'Close';
       
@@ -1178,11 +1183,11 @@
       
       // Modal body
       const body = document.createElement('div');
-      body.className = 'fb-modal-body';
+      body.className = 'sv-modal-body';
       
       if (annotations.length === 0) {
         body.innerHTML = `
-          <div class="fb-empty-state">
+          <div class="sv-empty-state">
             <span class="material-symbols-outlined">sentiment_satisfied</span>
             <div>No annotations yet</div>
           </div>
@@ -1190,7 +1195,7 @@
       } else {
         annotations.forEach(fb => {
           const item = document.createElement('div');
-          item.className = 'fb-annotation-item';
+          item.className = 'sv-annotation-item';
           
           // Parse URL for display
           let displayPath = 'Unknown';
@@ -1204,14 +1209,14 @@
           }
           
           item.innerHTML = `
-            <div class="fb-annotation-header">
-              <span class="material-symbols-outlined fb-annotation-icon">location_on</span>
-              <div class="fb-annotation-meta">
-                <div class="fb-annotation-page">${displayPath}</div>
-                <div class="fb-annotation-location">${displayHash || 'Top of page'} • (${fb.x}, ${fb.y})</div>
+            <div class="sv-annotation-header">
+              <span class="material-symbols-outlined sv-annotation-icon">location_on</span>
+              <div class="sv-annotation-meta">
+                <div class="sv-annotation-page">${displayPath}</div>
+                <div class="sv-annotation-location">${displayHash || 'Top of page'} • (${fb.x}, ${fb.y})</div>
               </div>
             </div>
-            <div class="fb-annotation-comment">${fb.comment}</div>
+            <div class="sv-annotation-comment">${fb.comment}</div>
           `;
           
           // Click handler to navigate
@@ -1249,7 +1254,7 @@
       // Ensure markers are visible
       if (!this.markersVisible) {
         this.markersVisible = true;
-        const markers = document.querySelectorAll('.fb-feedback-marker');
+        const markers = document.querySelectorAll('.sv-feedback-marker');
         markers.forEach(marker => {
           marker.style.display = 'block';
         });
@@ -1257,7 +1262,7 @@
           this.toggleMarkersButton.innerHTML = '<span class="material-symbols-outlined">visibility</span>';
           this.toggleMarkersButton.title = 'Hide markers';
         }
-        localStorage.setItem('feedback_markers_visible', 'true');
+        localStorage.setItem('syncvibe_markers_visible', 'true');
       }
       
       // If different page, navigate first
@@ -1329,9 +1334,9 @@
       // Mouse down - start drawing
       document.addEventListener('mousedown', (e) => {
         if (!this.isActive) return;
-        if (e.target.closest('.fb-widget-button')) return;
-        if (e.target.closest('.fb-feedback-box')) return;
-        if (e.target.closest('.fb-feedback-marker')) return;
+        if (e.target.closest('.sv-widget-button')) return;
+        if (e.target.closest('.sv-feedback-box')) return;
+        if (e.target.closest('.sv-feedback-marker')) return;
         
         e.preventDefault();
         e.stopPropagation();
@@ -1422,7 +1427,7 @@
       
       // Create drawing box
       const drawBox = document.createElement('div');
-      drawBox.className = 'fb-drawing-box';
+      drawBox.className = 'sv-drawing-box';
       drawBox.style.left = `${x}px`;
       drawBox.style.top = `${y}px`;
       drawBox.style.width = '0px';
@@ -1530,7 +1535,7 @@
       
       // Create comment input dialog
       const inputBox = document.createElement('div');
-      inputBox.className = 'fb-feedback-box';
+      inputBox.className = 'sv-feedback-box';
       
       // Temporarily position off-screen to measure
       inputBox.style.visibility = 'hidden';
@@ -1538,18 +1543,18 @@
       inputBox.style.top = '0px';
       
       inputBox.innerHTML = `
-        <div class="fb-feedback-box-header">
-          <div class="fb-feedback-box-title">Add Feedback</div>
-          <button class="fb-feedback-box-close">×</button>
+        <div class="sv-feedback-box-header">
+          <div class="sv-feedback-box-title">Add Feedback</div>
+          <button class="sv-feedback-box-close">×</button>
         </div>
         <textarea 
-          class="fb-feedback-textarea" 
+          class="sv-feedback-textarea" 
           placeholder="What's on your mind?"
           maxlength="${this.config.maxCommentLength}"
         ></textarea>
-        <div class="fb-feedback-actions">
-          <button class="fb-feedback-btn fb-feedback-btn-secondary">Cancel</button>
-          <button class="fb-feedback-btn fb-feedback-btn-primary">Save</button>
+        <div class="sv-feedback-actions">
+          <button class="sv-feedback-btn sv-feedback-btn-secondary">Cancel</button>
+          <button class="sv-feedback-btn sv-feedback-btn-primary">Save</button>
         </div>
       `;
       
@@ -1569,12 +1574,12 @@
       
       this.currentBox = { element: inputBox, x, y, width, height };
       
-      const textarea = inputBox.querySelector('.fb-feedback-textarea');
+      const textarea = inputBox.querySelector('.sv-feedback-textarea');
       textarea.focus();
       
-      inputBox.querySelector('.fb-feedback-box-close').onclick = () => this.cancelFeedback();
-      inputBox.querySelector('.fb-feedback-btn-secondary').onclick = () => this.cancelFeedback();
-      inputBox.querySelector('.fb-feedback-btn-primary').onclick = () => this.saveFeedback(textarea.value, x, y, width, height);
+      inputBox.querySelector('.sv-feedback-box-close').onclick = () => this.cancelFeedback();
+      inputBox.querySelector('.sv-feedback-btn-secondary').onclick = () => this.cancelFeedback();
+      inputBox.querySelector('.sv-feedback-btn-primary').onclick = () => this.saveFeedback(textarea.value, x, y, width, height);
       
       // Support Escape key to close
       const escapeHandler = (e) => {
@@ -1668,7 +1673,7 @@
     // FSID: FB-MARKER-001
     createMarker: function(feedback) {
       const marker = document.createElement('div');
-      marker.className = 'fb-feedback-marker';
+      marker.className = 'sv-feedback-marker';
       const markerNumber = this.feedbacks.indexOf(feedback) + 1;
       
       // Set box dimensions and position
@@ -1681,7 +1686,7 @@
       
       // Create number label
       const label = document.createElement('div');
-      label.className = 'fb-feedback-marker-label';
+      label.className = 'sv-feedback-marker-label';
       label.textContent = markerNumber;
       marker.appendChild(label);
       
@@ -1716,7 +1721,7 @@
       
       // Create chat-style comment box
       const inputBox = document.createElement('div');
-      inputBox.className = 'fb-feedback-box';
+      inputBox.className = 'sv-feedback-box';
       
       // Temporarily position off-screen to measure
       inputBox.style.visibility = 'hidden';
@@ -1729,43 +1734,43 @@
         commentsHTML = feedback.comments.map(c => {
           const authorName = c.author?.name || 'Unknown User';
           const isCurrentUser = c.author?.id === this.currentUser?.id;
-          const authorClass = isCurrentUser ? 'fb-comment-author-me' : 'fb-comment-author';
+          const authorClass = isCurrentUser ? 'sv-comment-author-me' : 'sv-comment-author';
           
           return `
-            <div class="fb-comment-item">
-              <div class="fb-comment-header">
+            <div class="sv-comment-item">
+              <div class="sv-comment-header">
                 <span class="${authorClass}">${this.escapeHtml(authorName)}</span>
-                <span class="fb-comment-time">${new Date(c.timestamp).toLocaleString()}</span>
+                <span class="sv-comment-time">${new Date(c.timestamp).toLocaleString()}</span>
               </div>
-              <div class="fb-comment-text">${this.escapeHtml(c.text)}</div>
+              <div class="sv-comment-text">${this.escapeHtml(c.text)}</div>
             </div>
           `;
         }).join('');
       }
       
       inputBox.innerHTML = `
-        <div class="fb-feedback-box-header">
-          <div class="fb-feedback-box-title">
+        <div class="sv-feedback-box-header">
+          <div class="sv-feedback-box-title">
             <span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">chat</span>
             Annotation #${this.feedbacks.indexOf(feedback) + 1}
           </div>
-          <button class="fb-feedback-box-close">×</button>
+          <button class="sv-feedback-box-close">×</button>
         </div>
-        <div class="fb-comments-history">
-          ${commentsHTML || '<div class="fb-no-comments">No comments yet</div>'}
+        <div class="sv-comments-history">
+          ${commentsHTML || '<div class="sv-no-comments">No comments yet</div>'}
         </div>
         <textarea 
-          class="fb-feedback-textarea" 
+          class="sv-feedback-textarea" 
           placeholder="Add a comment..."
           maxlength="${this.config.maxCommentLength}"
         ></textarea>
-        <div class="fb-feedback-actions">
-          <button class="fb-feedback-btn fb-feedback-btn-danger">
+        <div class="sv-feedback-actions">
+          <button class="sv-feedback-btn sv-feedback-btn-danger">
             <span class="material-symbols-outlined" style="font-size: 16px;">delete</span>
             Delete
           </button>
-          <button class="fb-feedback-btn fb-feedback-btn-secondary">Close</button>
-          <button class="fb-feedback-btn fb-feedback-btn-primary">Add Comment</button>
+          <button class="sv-feedback-btn sv-feedback-btn-secondary">Close</button>
+          <button class="sv-feedback-btn sv-feedback-btn-primary">Add Comment</button>
         </div>
       `;
       
@@ -1808,17 +1813,17 @@
       
       this.currentBox = { element: inputBox, feedback: feedback, marker: marker };
       
-      const textarea = inputBox.querySelector('.fb-feedback-textarea');
+      const textarea = inputBox.querySelector('.sv-feedback-textarea');
       textarea.focus();
       
-      inputBox.querySelector('.fb-feedback-box-close').onclick = () => this.closeCurrentBox();
-      inputBox.querySelector('.fb-feedback-btn-secondary').onclick = () => this.closeCurrentBox();
-      inputBox.querySelector('.fb-feedback-btn-danger').onclick = () => {
+      inputBox.querySelector('.sv-feedback-box-close').onclick = () => this.closeCurrentBox();
+      inputBox.querySelector('.sv-feedback-btn-secondary').onclick = () => this.closeCurrentBox();
+      inputBox.querySelector('.sv-feedback-btn-danger').onclick = () => {
         if (confirm('Are you sure you want to delete this annotation and all its comments?')) {
           this.deleteAnnotation(feedback.id);
         }
       };
-      inputBox.querySelector('.fb-feedback-btn-primary').onclick = () => {
+      inputBox.querySelector('.sv-feedback-btn-primary').onclick = () => {
         const newComment = textarea.value.trim();
         if (newComment) {
           this.addCommentToFeedback(feedback.id, newComment);
@@ -2051,46 +2056,46 @@
       this.hideViewportWarning();
       
       const warning = document.createElement('div');
-      warning.id = 'fb-viewport-warning';
-      warning.className = 'fb-viewport-warning';
+      warning.id = 'sv-viewport-warning';
+      warning.className = 'sv-viewport-warning';
       warning.innerHTML = `
-        <div class="fb-viewport-warning-content">
-          <div class="fb-viewport-warning-header">
-            <span class="material-symbols-outlined fb-viewport-warning-icon">tune</span>
+        <div class="sv-viewport-warning-content">
+          <div class="sv-viewport-warning-header">
+            <span class="material-symbols-outlined sv-viewport-warning-icon">tune</span>
             <strong>Display Mismatch Detected</strong>
           </div>
-          <div class="fb-viewport-warning-body">
-            <div class="fb-viewport-metric">
-              <div class="fb-viewport-metric-label">
+          <div class="sv-viewport-warning-body">
+            <div class="sv-viewport-metric">
+              <div class="sv-viewport-metric-label">
                 <span class="material-symbols-outlined">aspect_ratio</span>
                 Viewport Size
               </div>
-              <div class="fb-viewport-metric-values">
+              <div class="sv-viewport-metric-values">
                 <div>Expected: <strong>${originalWidth}×${originalHeight}</strong></div>
-                <div>Current: <strong id="fb-current-viewport">${window.innerWidth}×${window.innerHeight}</strong> <span id="fb-viewport-status" class="fb-status-badge fb-status-error">✗</span></div>
+                <div>Current: <strong id="sv-current-viewport">${window.innerWidth}×${window.innerHeight}</strong> <span id="sv-viewport-status" class="sv-status-badge sv-status-error">✗</span></div>
               </div>
             </div>
-            <div class="fb-viewport-metric">
-              <div class="fb-viewport-metric-label">
+            <div class="sv-viewport-metric">
+              <div class="sv-viewport-metric-label">
                 <span class="material-symbols-outlined">zoom_in</span>
                 Browser Zoom
               </div>
-              <div class="fb-viewport-metric-values">
+              <div class="sv-viewport-metric-values">
                 <div>Expected: <strong>100%</strong></div>
-                <div>Current: <strong id="fb-current-zoom">100%</strong> <span id="fb-zoom-status" class="fb-status-badge fb-status-ok">✓</span></div>
+                <div>Current: <strong id="sv-current-zoom">100%</strong> <span id="sv-zoom-status" class="sv-status-badge sv-status-ok">✓</span></div>
               </div>
             </div>
-            <div class="fb-viewport-metric">
-              <div class="fb-viewport-metric-label">
+            <div class="sv-viewport-metric">
+              <div class="sv-viewport-metric-label">
                 <span class="material-symbols-outlined">format_size</span>
                 Font Size
               </div>
-              <div class="fb-viewport-metric-values">
+              <div class="sv-viewport-metric-values">
                 <div>Expected: <strong>16px</strong></div>
-                <div>Current: <strong id="fb-current-fontsize">16px</strong> <span id="fb-fontsize-status" class="fb-status-badge fb-status-ok">✓</span></div>
+                <div>Current: <strong id="sv-current-fontsize">16px</strong> <span id="sv-fontsize-status" class="sv-status-badge sv-status-ok">✓</span></div>
               </div>
             </div>
-            <div class="fb-viewport-warning-hint">
+            <div class="sv-viewport-warning-hint">
               <span class="material-symbols-outlined">info</span>
               Adjust your window size and browser zoom to match the expected values. Indicators will turn green when fixed.
             </div>
@@ -2114,7 +2119,7 @@
       }
       
       this._viewportMonitorInterval = setInterval(() => {
-        if (!document.getElementById('fb-viewport-warning')) {
+        if (!document.getElementById('sv-viewport-warning')) {
           this.stopViewportMonitoring();
           return;
         }
@@ -2132,12 +2137,12 @@
     
     // Update metrics in real-time
     updateViewportMetrics: function() {
-      const currentViewportEl = document.getElementById('fb-current-viewport');
-      const viewportStatusEl = document.getElementById('fb-viewport-status');
-      const currentZoomEl = document.getElementById('fb-current-zoom');
-      const zoomStatusEl = document.getElementById('fb-zoom-status');
-      const currentFontsizeEl = document.getElementById('fb-current-fontsize');
-      const fontsizeStatusEl = document.getElementById('fb-fontsize-status');
+      const currentViewportEl = document.getElementById('sv-current-viewport');
+      const viewportStatusEl = document.getElementById('sv-viewport-status');
+      const currentZoomEl = document.getElementById('sv-current-zoom');
+      const zoomStatusEl = document.getElementById('sv-zoom-status');
+      const currentFontsizeEl = document.getElementById('sv-current-fontsize');
+      const fontsizeStatusEl = document.getElementById('sv-fontsize-status');
       
       if (!currentViewportEl) return;
       
@@ -2152,21 +2157,21 @@
         Math.abs(currentHeight - this._originalViewport.height) <= 20;
       
       viewportStatusEl.textContent = viewportMatch ? '✓' : '✗';
-      viewportStatusEl.className = `fb-status-badge ${viewportMatch ? 'fb-status-ok' : 'fb-status-error'}`;
+      viewportStatusEl.className = `sv-status-badge ${viewportMatch ? 'sv-status-ok' : 'sv-status-error'}`;
       
       // Detect zoom level
       const zoom = Math.round(window.devicePixelRatio * 100);
       currentZoomEl.textContent = `${zoom}%`;
       const zoomMatch = zoom === 100;
       zoomStatusEl.textContent = zoomMatch ? '✓' : '✗';
-      zoomStatusEl.className = `fb-status-badge ${zoomMatch ? 'fb-status-ok' : 'fb-status-error'}`;
+      zoomStatusEl.className = `sv-status-badge ${zoomMatch ? 'sv-status-ok' : 'sv-status-error'}`;
       
       // Detect font size
       const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
       currentFontsizeEl.textContent = `${Math.round(fontSize)}px`;
       const fontsizeMatch = Math.abs(fontSize - 16) <= 2;
       fontsizeStatusEl.textContent = fontsizeMatch ? '✓' : '✗';
-      fontsizeStatusEl.className = `fb-status-badge ${fontsizeMatch ? 'fb-status-ok' : 'fb-status-error'}`;
+      fontsizeStatusEl.className = `sv-status-badge ${fontsizeMatch ? 'sv-status-ok' : 'sv-status-error'}`;
       
       // Auto-dismiss if all match
       if (viewportMatch && zoomMatch && fontsizeMatch) {
@@ -2204,7 +2209,7 @@
     // Hide viewport warning
     hideViewportWarning: function() {
       this.stopViewportMonitoring();
-      const warning = document.getElementById('fb-viewport-warning');
+      const warning = document.getElementById('sv-viewport-warning');
       if (warning) {
         warning.remove();
       }
@@ -2212,7 +2217,7 @@
 
     // FSID: FB-CLEAR-MARKERS-001
     clearMarkers: function() {
-      document.querySelectorAll('.fb-feedback-marker').forEach(m => m.remove());
+      document.querySelectorAll('.sv-feedback-marker').forEach(m => m.remove());
     },
 
     // Export annotations to JSON file
@@ -2389,7 +2394,7 @@
   };
 
   // Export to window
-  window.FeedbackWidget = FeedbackWidget;
+  window.SyncVibe = SyncVibe;
 
 })(window);
 

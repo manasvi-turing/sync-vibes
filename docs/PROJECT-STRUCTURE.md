@@ -11,8 +11,8 @@
 
 | File | Size | Purpose |
 |------|------|---------|
-| `feedback-widget.js` | 12 KB | Main library (unminified) |
-| `feedback-widget.min.js` | 9.7 KB | Minified for production |
+| `syncvibe.js` | 12 KB | Main library (unminified) |
+| `syncvibe.min.js` | 9.7 KB | Minified for production |
 | **Gzipped** | **2.74 KB** | **Actual CDN transfer size** ✨ |
 
 ## 🗂️ Project Structure
@@ -20,8 +20,8 @@
 ```
 userfeedback/
 ├── 📄 Core Files
-│   ├── feedback-widget.js          # Main library (12KB)
-│   ├── feedback-widget.min.js      # Minified (9.7KB, gzipped: 2.74KB)
+│   ├── syncvibe.js          # Main library (12KB)
+│   ├── syncvibe.min.js      # Minified (9.7KB, gzipped: 2.74KB)
 │   └── package.json                # NPM package configuration
 │
 ├── 📖 Documentation
@@ -98,7 +98,7 @@ All functions follow coding standards with Function Signature IDs (FSIDs):
 ## 🔧 Configuration Options
 
 ```javascript
-FeedbackWidget.init({
+SyncVibe.init({
   buttonPosition: 'bottom-right',  // Button placement
   showButton: true,                // Show/hide button
   theme: 'light',                  // Theme (light only for now)
@@ -140,29 +140,29 @@ Each feedback object captures:
 
 ### 1. Quick Start (Vanilla HTML)
 ```html
-<script src="feedback-widget.js"></script>
-<script>FeedbackWidget.init();</script>
+<script src="syncvibe.js"></script>
+<script>SyncVibe.init();</script>
 ```
 
 ### 2. React
 ```jsx
 useEffect(() => {
-  FeedbackWidget.init();
+  SyncVibe.init();
 }, []);
 ```
 
 ### 3. Next.js
 ```jsx
-<Script src="/feedback-widget.js" onLoad={() => {
-  FeedbackWidget.init();
+<Script src="/syncvibe.js" onLoad={() => {
+  SyncVibe.init();
 }} />
 ```
 
 ### 4. Custom Integration
 ```javascript
-FeedbackWidget.init({ showButton: false });
+SyncVibe.init({ showButton: false });
 document.getElementById('my-btn').onclick = () => {
-  FeedbackWidget.toggleMode();
+  SyncVibe.toggleMode();
 };
 ```
 
@@ -171,7 +171,7 @@ document.getElementById('my-btn').onclick = () => {
 ```javascript
 // Export and sync
 async function syncToBackend() {
-  const feedbacks = FeedbackWidget.exportFeedbacks();
+  const feedbacks = SyncVibe.exportFeedbacks();
   await fetch('/api/feedbacks', {
     method: 'POST',
     body: JSON.stringify(feedbacks)
@@ -186,16 +186,16 @@ setInterval(syncToBackend, 5 * 60 * 1000);
 
 ### CDN (jsDelivr)
 ```html
-<script src="https://cdn.jsdelivr.net/gh/[user]/[repo]/feedback-widget.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/[user]/[repo]/syncvibe.min.js"></script>
 ```
 
 ### NPM (Future)
 ```bash
-npm install feedback-widget
+npm install syncvibe
 ```
 
 ### Direct Download
-Just copy `feedback-widget.js` or `feedback-widget.min.js`
+Just copy `syncvibe.js` or `syncvibe.min.js`
 
 ## 🎯 Design Principles
 
@@ -249,14 +249,14 @@ npm install  # If using npm scripts
 
 ### Development
 ```bash
-# Edit feedback-widget.js
+# Edit syncvibe.js
 # Test with demo.html
 python3 -m http.server 8000
 ```
 
 ### Build
 ```bash
-npm run minify  # Creates feedback-widget.min.js
+npm run minify  # Creates syncvibe.min.js
 ```
 
 ### Deploy
@@ -300,8 +300,8 @@ npm run minify  # Creates feedback-widget.min.js
 | **Live Demo** | demo.html |
 | **Simple Example** | example-vanilla.html |
 | **React Example** | example-react.html |
-| **Main Library** | feedback-widget.js |
-| **Production Build** | feedback-widget.min.js |
+| **Main Library** | syncvibe.js |
+| **Production Build** | syncvibe.min.js |
 | **Change History** | CHANGELOG.md |
 
 ---
