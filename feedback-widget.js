@@ -1235,6 +1235,59 @@
       this.createFeedbackBox(x, y, width, height);
     },
 
+    // Calculate smart position for comment box to keep it in viewport
+    calculateBoxPosition: function(annotationX, annotationY, annotationWidth, annotationHeight, boxWidth, boxHeight) {
+      const gap = 10; // Gap between annotation and box
+      const padding = 20; // Padding from viewport edges
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      
+      let left, top;
+      
+      // Default: Try to position on the right
+      left = annotationX + annotationWidth + gap;
+      top = annotationY;
+      
+      // Check if box would overflow right edge
+      if (left + boxWidth > viewportWidth + scrollX - padding) {
+        // Position on the left instead
+        left = annotationX - boxWidth - gap;
+        
+        // If still overflows (annotation is too wide or near left edge), center it horizontally
+        if (left < scrollX + padding) {
+          left = Math.max(scrollX + padding, annotationX + annotationWidth/2 - boxWidth/2);
+        }
+      }
+      
+      // Ensure left edge is visible
+      if (left < scrollX + padding) {
+        left = scrollX + padding;
+      }
+      
+      // Vertical positioning: Try to align with top of annotation
+      top = annotationY;
+      
+      // Check if box would overflow bottom
+      if (top + boxHeight > viewportHeight + scrollY - padding) {
+        // Try to align with bottom of annotation
+        top = annotationY + annotationHeight - boxHeight;
+        
+        // If still overflows top, position from bottom of viewport
+        if (top < scrollY + padding) {
+          top = viewportHeight + scrollY - boxHeight - padding;
+        }
+      }
+      
+      // Ensure top edge is visible
+      if (top < scrollY + padding) {
+        top = scrollY + padding;
+      }
+      
+      return { left, top };
+    },
+    
     // FSID: FB-BOX-001
     createFeedbackBox: function(x, y, width, height) {
       // Close any existing box first
@@ -1243,8 +1296,11 @@
       // Create comment input dialog
       const inputBox = document.createElement('div');
       inputBox.className = 'fb-feedback-box';
-      inputBox.style.left = `${x + width + 10}px`;
-      inputBox.style.top = `${y}px`;
+      
+      // Temporarily position off-screen to measure
+      inputBox.style.visibility = 'hidden';
+      inputBox.style.left = '0px';
+      inputBox.style.top = '0px';
       
       inputBox.innerHTML = `
         <div class="fb-feedback-box-header">
@@ -1263,6 +1319,19 @@
       `;
       
       document.body.appendChild(inputBox);
+      
+      // Measure box dimensions
+      const boxWidth = inputBox.offsetWidth;
+      const boxHeight = inputBox.offsetHeight;
+      
+      // Calculate smart position
+      const position = this.calculateBoxPosition(x, y, width, height, boxWidth, boxHeight);
+      
+      // Apply position and make visible
+      inputBox.style.left = `${position.left}px`;
+      inputBox.style.top = `${position.top}px`;
+      inputBox.style.visibility = 'visible';
+      
       this.currentBox = { element: inputBox, x, y, width, height };
       
       const textarea = inputBox.querySelector('.fb-feedback-textarea');
@@ -1409,15 +1478,10 @@
       const inputBox = document.createElement('div');
       inputBox.className = 'fb-feedback-box';
       
-      // Position near the marker
-      const markerRect = marker?.getBoundingClientRect();
-      if (markerRect) {
-        inputBox.style.left = `${markerRect.right + window.scrollX + 10}px`;
-        inputBox.style.top = `${markerRect.top + window.scrollY}px`;
-      } else {
-        inputBox.style.left = `${feedback.position.pageX + feedback.position.width + 10}px`;
-        inputBox.style.top = `${feedback.position.pageY}px`;
-      }
+      // Temporarily position off-screen to measure
+      inputBox.style.visibility = 'hidden';
+      inputBox.style.left = '0px';
+      inputBox.style.top = '0px';
       
       // Build comments history HTML
       let commentsHTML = '';
@@ -1457,6 +1521,42 @@
       `;
       
       document.body.appendChild(inputBox);
+      
+      // Measure box dimensions (important: done after appendChild and HTML set)
+      const boxWidth = inputBox.offsetWidth;
+      const boxHeight = inputBox.offsetHeight;
+      
+      // Get annotation position (prefer marker if available for accurate positioning)
+      let annotationX, annotationY, annotationWidth, annotationHeight;
+      
+      if (marker) {
+        const markerRect = marker.getBoundingClientRect();
+        annotationX = markerRect.left + window.scrollX;
+        annotationY = markerRect.top + window.scrollY;
+        annotationWidth = markerRect.width;
+        annotationHeight = markerRect.height;
+      } else {
+        annotationX = feedback.position.pageX;
+        annotationY = feedback.position.pageY;
+        annotationWidth = feedback.position.width;
+        annotationHeight = feedback.position.height;
+      }
+      
+      // Calculate smart position
+      const position = this.calculateBoxPosition(
+        annotationX, 
+        annotationY, 
+        annotationWidth, 
+        annotationHeight, 
+        boxWidth, 
+        boxHeight
+      );
+      
+      // Apply position and make visible
+      inputBox.style.left = `${position.left}px`;
+      inputBox.style.top = `${position.top}px`;
+      inputBox.style.visibility = 'visible';
+      
       this.currentBox = { element: inputBox, feedback: feedback, marker: marker };
       
       const textarea = inputBox.querySelector('.fb-feedback-textarea');
