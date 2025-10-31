@@ -609,6 +609,133 @@
           color: #9CA3AF;
           font-size: 11px;
         }
+        
+        .fb-viewport-warning {
+          position: fixed;
+          top: 80px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 1000001;
+          max-width: 600px;
+          width: 90%;
+          animation: fb-slide-in 0.3s ease-out;
+        }
+        
+        .fb-viewport-warning-content {
+          background: white;
+          border: 2px solid #F59E0B;
+          border-radius: 16px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+        }
+        
+        .fb-viewport-warning-header {
+          background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+          padding: 16px 20px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: white;
+        }
+        
+        .fb-viewport-warning-header strong {
+          flex: 1;
+          font-size: 16px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        .fb-viewport-warning-icon {
+          font-size: 24px;
+        }
+        
+        .fb-viewport-warning-body {
+          padding: 20px;
+        }
+        
+        .fb-viewport-metric {
+          margin-bottom: 20px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .fb-viewport-metric:last-of-type {
+          border-bottom: none;
+          margin-bottom: 0;
+          padding-bottom: 0;
+        }
+        
+        .fb-viewport-metric-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 600;
+          color: #374151;
+          margin-bottom: 12px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 14px;
+        }
+        
+        .fb-viewport-metric-label .material-symbols-outlined {
+          font-size: 20px;
+          color: #6B7280;
+        }
+        
+        .fb-viewport-metric-values {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-size: 14px;
+          color: #6B7280;
+          padding-left: 28px;
+        }
+        
+        .fb-viewport-metric-values strong {
+          color: #111827;
+          font-family: 'Monaco', 'Courier New', monospace;
+        }
+        
+        .fb-status-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          font-weight: bold;
+          font-size: 14px;
+          margin-left: 8px;
+          transition: all 0.3s;
+        }
+        
+        .fb-status-badge.fb-status-ok {
+          background: #10B981;
+          color: white;
+        }
+        
+        .fb-status-badge.fb-status-error {
+          background: #EF4444;
+          color: white;
+        }
+        
+        .fb-viewport-warning-hint {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          background: #F3F4F6;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 13px;
+          color: #6B7280;
+          line-height: 1.5;
+          margin-top: 16px;
+        }
+        
+        .fb-viewport-warning-hint .material-symbols-outlined {
+          font-size: 20px;
+          color: #9CA3AF;
+          flex-shrink: 0;
+        }
       `;
       
       const styleEl = document.createElement('style');
@@ -1013,6 +1140,16 @@
       // Also listen for hashchange for hash-based routing
       window.addEventListener('hashchange', () => {
         this.handleRouteChange();
+      });
+      
+      // Listen for window resize to recheck viewport mismatch
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        // Debounce resize events
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          this.recheckViewportMismatch();
+        }, 300);
       });
     },
 
@@ -1510,7 +1647,208 @@
       // Update stats when displaying markers for new page
       this.updateStats();
       
+      // Check for viewport mismatch
+      this.checkViewportMismatch(matchingFeedbacks);
+      
       console.log(`Displayed ${matchingFeedbacks.length} markers for ${currentPath}${currentHash}`);
+    },
+    
+    // Check if viewport size has changed significantly
+    checkViewportMismatch: function(feedbacks) {
+      if (!feedbacks || feedbacks.length === 0) {
+        this.hideViewportWarning();
+        return;
+      }
+      
+      // Get the most common viewport size from annotations
+      const viewports = feedbacks
+        .map(fb => fb.position)
+        .filter(pos => pos && pos.viewportWidth && pos.viewportHeight);
+      
+      if (viewports.length === 0) {
+        this.hideViewportWarning();
+        return;
+      }
+      
+      // Use the first annotation's viewport (most annotations likely made at same size)
+      const originalViewport = viewports[0];
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      
+      // Threshold: 100px difference is significant
+      const widthDiff = Math.abs(currentWidth - originalViewport.viewportWidth);
+      const heightDiff = Math.abs(currentHeight - originalViewport.viewportHeight);
+      
+      if (widthDiff > 100 || heightDiff > 100) {
+        this.showViewportWarning(originalViewport.viewportWidth, originalViewport.viewportHeight);
+      } else {
+        this.hideViewportWarning();
+      }
+    },
+    
+    // Show viewport mismatch warning
+    showViewportWarning: function(originalWidth, originalHeight) {
+      // Remove existing warning if any
+      this.hideViewportWarning();
+      
+      const warning = document.createElement('div');
+      warning.id = 'fb-viewport-warning';
+      warning.className = 'fb-viewport-warning';
+      warning.innerHTML = `
+        <div class="fb-viewport-warning-content">
+          <div class="fb-viewport-warning-header">
+            <span class="material-symbols-outlined fb-viewport-warning-icon">tune</span>
+            <strong>Display Mismatch Detected</strong>
+          </div>
+          <div class="fb-viewport-warning-body">
+            <div class="fb-viewport-metric">
+              <div class="fb-viewport-metric-label">
+                <span class="material-symbols-outlined">aspect_ratio</span>
+                Viewport Size
+              </div>
+              <div class="fb-viewport-metric-values">
+                <div>Expected: <strong>${originalWidth}×${originalHeight}</strong></div>
+                <div>Current: <strong id="fb-current-viewport">${window.innerWidth}×${window.innerHeight}</strong> <span id="fb-viewport-status" class="fb-status-badge fb-status-error">✗</span></div>
+              </div>
+            </div>
+            <div class="fb-viewport-metric">
+              <div class="fb-viewport-metric-label">
+                <span class="material-symbols-outlined">zoom_in</span>
+                Browser Zoom
+              </div>
+              <div class="fb-viewport-metric-values">
+                <div>Expected: <strong>100%</strong></div>
+                <div>Current: <strong id="fb-current-zoom">100%</strong> <span id="fb-zoom-status" class="fb-status-badge fb-status-ok">✓</span></div>
+              </div>
+            </div>
+            <div class="fb-viewport-metric">
+              <div class="fb-viewport-metric-label">
+                <span class="material-symbols-outlined">format_size</span>
+                Font Size
+              </div>
+              <div class="fb-viewport-metric-values">
+                <div>Expected: <strong>16px</strong></div>
+                <div>Current: <strong id="fb-current-fontsize">16px</strong> <span id="fb-fontsize-status" class="fb-status-badge fb-status-ok">✓</span></div>
+              </div>
+            </div>
+            <div class="fb-viewport-warning-hint">
+              <span class="material-symbols-outlined">info</span>
+              Adjust your window size and browser zoom to match the expected values. Indicators will turn green when fixed.
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(warning);
+      
+      // Store original dimensions
+      this._originalViewport = { width: originalWidth, height: originalHeight };
+      
+      // Start live updates
+      this.startViewportMonitoring();
+    },
+    
+    // Start monitoring viewport changes
+    startViewportMonitoring: function() {
+      if (this._viewportMonitorInterval) {
+        clearInterval(this._viewportMonitorInterval);
+      }
+      
+      this._viewportMonitorInterval = setInterval(() => {
+        if (!document.getElementById('fb-viewport-warning')) {
+          this.stopViewportMonitoring();
+          return;
+        }
+        this.updateViewportMetrics();
+      }, 200); // Update every 200ms
+    },
+    
+    // Stop monitoring
+    stopViewportMonitoring: function() {
+      if (this._viewportMonitorInterval) {
+        clearInterval(this._viewportMonitorInterval);
+        this._viewportMonitorInterval = null;
+      }
+    },
+    
+    // Update metrics in real-time
+    updateViewportMetrics: function() {
+      const currentViewportEl = document.getElementById('fb-current-viewport');
+      const viewportStatusEl = document.getElementById('fb-viewport-status');
+      const currentZoomEl = document.getElementById('fb-current-zoom');
+      const zoomStatusEl = document.getElementById('fb-zoom-status');
+      const currentFontsizeEl = document.getElementById('fb-current-fontsize');
+      const fontsizeStatusEl = document.getElementById('fb-fontsize-status');
+      
+      if (!currentViewportEl) return;
+      
+      // Current viewport
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      currentViewportEl.textContent = `${currentWidth}×${currentHeight}`;
+      
+      // Check viewport match (within 20px tolerance)
+      const viewportMatch = 
+        Math.abs(currentWidth - this._originalViewport.width) <= 20 &&
+        Math.abs(currentHeight - this._originalViewport.height) <= 20;
+      
+      viewportStatusEl.textContent = viewportMatch ? '✓' : '✗';
+      viewportStatusEl.className = `fb-status-badge ${viewportMatch ? 'fb-status-ok' : 'fb-status-error'}`;
+      
+      // Detect zoom level
+      const zoom = Math.round(window.devicePixelRatio * 100);
+      currentZoomEl.textContent = `${zoom}%`;
+      const zoomMatch = zoom === 100;
+      zoomStatusEl.textContent = zoomMatch ? '✓' : '✗';
+      zoomStatusEl.className = `fb-status-badge ${zoomMatch ? 'fb-status-ok' : 'fb-status-error'}`;
+      
+      // Detect font size
+      const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      currentFontsizeEl.textContent = `${Math.round(fontSize)}px`;
+      const fontsizeMatch = Math.abs(fontSize - 16) <= 2;
+      fontsizeStatusEl.textContent = fontsizeMatch ? '✓' : '✗';
+      fontsizeStatusEl.className = `fb-status-badge ${fontsizeMatch ? 'fb-status-ok' : 'fb-status-error'}`;
+      
+      // Auto-dismiss if all match
+      if (viewportMatch && zoomMatch && fontsizeMatch) {
+        setTimeout(() => {
+          this.hideViewportWarning();
+        }, 2000); // Give user 2s to see the success state
+      }
+    },
+    
+    // Recheck viewport mismatch (called on resize)
+    recheckViewportMismatch: function() {
+      // Get feedbacks for current page
+      const currentUrl = window.location.href;
+      const currentPath = window.location.pathname;
+      const currentHash = window.location.hash;
+      
+      const matchingFeedbacks = this.feedbacks.filter(fb => {
+        try {
+          const fbUrl = new URL(fb.url, window.location.origin);
+          if (fb.url === currentUrl) return true;
+          if (fbUrl.pathname === currentPath && fbUrl.hash === currentHash) return true;
+          if (fbUrl.pathname === currentPath && !currentHash && !fbUrl.hash) return true;
+          return false;
+        } catch (e) {
+          return fb.pathname === currentPath;
+        }
+      });
+      
+      // Recheck viewport mismatch
+      if (matchingFeedbacks.length > 0) {
+        this.checkViewportMismatch(matchingFeedbacks);
+      }
+    },
+    
+    // Hide viewport warning
+    hideViewportWarning: function() {
+      this.stopViewportMonitoring();
+      const warning = document.getElementById('fb-viewport-warning');
+      if (warning) {
+        warning.remove();
+      }
     },
 
     // FSID: FB-CLEAR-MARKERS-001
